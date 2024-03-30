@@ -11,6 +11,3 @@ summaryLength = 0
 
 [outputs]
   home = ["HTML", "RSS", "JSON"]
-
-# version 4
-googleAnalytics = "G-0D0GY7G7HK"
