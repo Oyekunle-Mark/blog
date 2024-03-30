@@ -11,31 +11,29 @@
 # ordered by weight from lowest to highest.
 
 [[main]]
-  name = "Blog"
+  name = "Home"
   pageRef = "posts"
   weight = 10
 
 [[main]]
-  name = "Categories"
-  pageRef = "categories"
+  name = "About"
+  pageRef = "about"
   weight = 20
 
 [[main]]
-  name = "Tags"
-  pageRef = "tags"
+  name = "GitHub"
+  url = "https://github.com/Oyekunle-Mark"
   weight = 30
+  [main.params]
+    icon = "github"
+    showName = false
+    target = "_blank"
 
 [[main]]
   identifier = "search"
-  weight = 99
+  weight = 40
   [main.params]
     action = "search"
-
-[[main]]
-  identifier = "locale"
-  weight = 100
-  [main.params]
-    action = "locale"
 
 # -- Footer Menu --
 # The footer menu is displayed at the bottom of the page, just before
