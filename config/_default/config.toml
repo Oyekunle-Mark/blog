@@ -2,7 +2,7 @@
 # Refer to the theme docs for more details about each of these parameters.
 # https://jpanther.github.io/congo/docs/getting-started/
 
-baseURL = "https://oyekunleblog.netlify.app/"
+baseURL = "https://oyeoloyede.com/"
 defaultContentLanguage = "en"
 
 enableRobotsTXT = true
@@ -11,3 +11,6 @@ summaryLength = 0
 
 [outputs]
   home = ["HTML", "RSS", "JSON"]
+
+# version 4
+googleAnalytics = "G-0D0GY7G7HK"
