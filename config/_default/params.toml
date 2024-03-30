@@ -9,8 +9,8 @@ colorScheme = "cherry"
 defaultAppearance = "light" # valid options: light or dark
 autoSwitchAppearance = true
 
-enableSearch = false
-enableCodeCopy = false
+enableSearch = true
+enableCodeCopy = true
 enableImageLazyLoading = true
 enableImageWebp = true
 
@@ -26,7 +26,7 @@ fingerprintAlgorithm = "sha256"
 [footer]
   showCopyright = true
   showThemeAttribution = true
-  showAppearanceSwitcher = false
+  showAppearanceSwitcher = true
   showScrollToTop = true
 
 [homepage]
@@ -38,7 +38,7 @@ fingerprintAlgorithm = "sha256"
   showDate = true
   showDateUpdated = false
   showAuthor = true
-  showBreadcrumbs = false
+  showBreadcrumbs = true
   showDraftLabel = true
   showEdit = false
   # editURL = "https://github.com/username/repo/"
@@ -47,16 +47,16 @@ fingerprintAlgorithm = "sha256"
   showPagination = true
   invertPagination = false
   showReadingTime = true
-  showTableOfContents = false
+  showTableOfContents = true
   showTaxonomies = false
   showWordCount = false
   showComments = false
   # sharingLinks = ["facebook", "x-twitter", "mastodon", "pinterest", "reddit", "linkedin", "email", "telegram", "line", "weibo"]
 
 [list]
-  showBreadcrumbs = false
-  showSummary = false
-  showTableOfContents = false
+  showBreadcrumbs = true
+  showSummary = true
+  showTableOfContents = true
   showTaxonomies = false
   groupByYear = true
   paginationWidth = 1
