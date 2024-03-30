@@ -5,7 +5,7 @@
 [build.environment]
   HUGO_VERSION = "0.119.0"
   NODE_ENV = "production"
-  TZ = "UTC"  # Set to preferred timezone
+  TZ = "GMT"
 
 [context.production.environment]
   HUGO_ENV = "production"
