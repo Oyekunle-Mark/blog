@@ -1,2 +1,3 @@
 # blog
-My writings
+
+Source code of my personal website.
