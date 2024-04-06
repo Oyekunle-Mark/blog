@@ -6,11 +6,13 @@ summary: "With my workflow favouring the terminal over GUI-based development too
 draft: true
 ---
 
-Until 2024, I didn't have a big need to customise terminal commands and utilities. I used Visual Studio Code heavily, its CLI interface was good enough for me when I needed to use the terminal. My choice to switch to a more terminal-native environment has led me to learn how to be comfortable with Vim and Tmux, and I use these tools both for work and personal use now. With that decision has also come the need to customize them, via config files, to my taste. Sharing these config files between my work and personal computers(or any other machine for that matter) has led me to check them into git, and devise a git workflow for keeping them in sync across the machines I develop on.
+Until 2024, I didn't have a big need to customise terminal commands and utilities. I used Visual Studio Code heavily, its CLI interface was good enough for me when I needed to use the terminal. My choice to switch to a more terminal-native environment has led me to learn how to be comfortable with Vim and Tmux, and I use these tools both for work and personal use now.
+
+With that decision has also come the need to customize them, via config files, to my taste. Sharing these config files between my work and personal computers(or any other machine for that matter) has led me to check them into git, and devise a git workflow for keeping them in sync across the machines I develop on.
 
 ## The config files
 
-The config files are checked into git and pushed to a [GitHub repository](https://github.com/Oyekunle-Mark/dotfiles/tree/master). At the time of writing this article, I have config files for vim, tmux and zsh. The GitHub repository can be considered the single source of truth for every machine that pulls its config from that repository.
+The config files are checked into git and pushed to a [GitHub repository](https://github.com/Oyekunle-Mark/dotfiles/tree/master). At the time of writing this article, I have config files for [vim](https://github.com/Oyekunle-Mark/dotfiles/blob/master/.vimrc), [tmux](https://github.com/Oyekunle-Mark/dotfiles/blob/master/.tmux.conf) and [zsh](https://github.com/Oyekunle-Mark/dotfiles/blob/master/.zshrc). The GitHub repository can be considered the single source of truth for every machine that pulls its config from that repository.
 
 ## Workflow
 
