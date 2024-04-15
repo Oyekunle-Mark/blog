@@ -3,7 +3,7 @@ title: "My First Foray into 3D Printing"
 date: 2024-04-11
 description: "My First Foray into 3D Printing"
 summary: "I came by a little time over the Christmas break and decided to try my hand at 3D printing. I write about my first 3D printing experiences in this article"
-draft: true
+draft: false
 ---
 
 3D printing had been something that had fascinated me for months. Towards the end of last year, I decided to take the plunge and try my hand at 3D printing over the Christmas holiday. It wasn't that intimidating a move for me because firstly, I always relish the opportunity of learning something new. Secondly, I have a little formal education in Mechanical Engineering so manufacturing is a topic I have rudimentary knowledge of.
