@@ -16,7 +16,7 @@ title = "Oye Oloyede"
 name = "Oye Oloyede"
 image = "img/avatar.jpg"
 headline = "Software Engineer, incurable tinkerer"
-bio = "Hey there, I'm Oye. I spend most of my time on satisfying my curosities about computers, along with other trivial hobbies. This blog documents my learning adventures, in cases where I summon the willpower to write about them."
+bio = ""
 links = [
   { email = "mailto:oyekunlemac@gmail.com" },
   #   { link = "https://link-to-some-website.com/" },
@@ -30,7 +30,7 @@ links = [
   #   { facebook = "https://facebook.com/username" },
   #   { flickr = "https://www.flickr.com/photos/username/" },
   #   { foursquare = "https://foursquare.com/username" },
-  #   { github = "https://github.com/username" },
+  { github = "https://github.com/Oyekunle-Mark" },
   #   { gitlab = "https://gitlab.com/username" },
   #   { google = "https://www.google.com/" },
   #   { google-scholar = "https://scholar.google.com/citations?user=user-id" },
