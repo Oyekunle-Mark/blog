@@ -4,6 +4,7 @@ date: 2021-10-20
 description: "Annotations and Type Checking in Python"
 summary: "In this article, we will be looking at how to add annotations and type checking to our Python code."
 draft: false
+tags: ["python"]
 ---
 
 Python is a dynamically typed programming language. This means that type checking is done at run-time. [PEP 484](https://www.python.org/dev/peps/pep-0484/) introduced type hints, which makes it possible to add type hints to variables and function signatures.

@@ -4,6 +4,7 @@ date: 2021-08-21
 description: "Introduction to YAML - Syntax and Applications"
 summary: "In this tutorial, you will learn about YAML, its syntax, and its applications. After reading this tutorial, you will know enough to read, understand, and write YAML files"
 draft: false
+tags: ["yaml"]
 ---
 
 YAML is a text-based human-readable language used mostly used for storing configuration information and data exchange. It is a [data serialization](https://devopedia.org/data-serialization) language similar to XML and JSON.

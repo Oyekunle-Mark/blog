@@ -4,6 +4,7 @@ date: 2021-09-26
 description: "SQL Insert Into Select Statement - An Overview"
 summary: "In this article, I will introduce you to the `INSERT INTO SELECT` statement that is supported by every major SQL engine. This statement allows you to copy a large amount of data from one or more tables into another table efficiently."
 draft: false
+tags: ["sql", "databases"]
 ---
 
 Copying a large number of records from one table, or by joining more than one table, into another table is a frequently performed action in database systems. This straightforward operation can be performed in a number of ways. Many of the popular ORMs also have ways to chunk these records when the size becomes large.
