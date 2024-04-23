@@ -4,6 +4,7 @@ date: 2024-04-06
 description: "Keeping config files in sync with git"
 summary: "With my workflow favouring the terminal over GUI-based development tools, my config files for the common terminal utilities I use daily have been growing as I build proficiency in Vim and Tmux. In this article, I will show you how I use git to keep my config files in sync across machines."
 draft: false
+tags: ["config", "terminal"]
 ---
 
 Until 2024, I didn't have a big need to customise terminal commands and utilities. I used Visual Studio Code heavily, its CLI interface was good enough for me when I needed to use the terminal. My choice to switch to a more terminal-native environment has led me to learn how to be comfortable with Vim and Tmux, and I use these tools both for work and personal use now.

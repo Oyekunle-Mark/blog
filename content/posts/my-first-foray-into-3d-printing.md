@@ -3,6 +3,7 @@ title: "My First Foray into 3D Printing"
 date: 2024-04-11
 description: "My First Foray into 3D Printing"
 summary: "I came by a little time over the Christmas break and decided to try my hand at 3D printing. I write about my first 3D printing experiences in this article"
+tags: ["3d-printing"]
 draft: false
 ---
 

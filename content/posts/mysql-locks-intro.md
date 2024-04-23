@@ -4,6 +4,7 @@ date: 2022-01-03
 description: "An Introduction to MySQL Locks"
 summary: "Concurrent access to database records from different client sessions can impact data integrity and lead to the expected behavior of computer programs that perform specific actions depending on the value of the data retrieved from the database. In this article, I will give you an introduction to how MySQL locks can be used for concurrency control and guarantee data integrity while allowing multiple users or sessions to safely interact with data. I will also write about the popular types of MySQL locks."
 draft: false
+tags: ["sql", "locks", "databases"]
 ---
 
 Concurrent access to database records from different client sessions can impact data integrity and lead to the expected behavior of computer programs that perform specific actions depending on the value of the data retrieved from the database. In this article, I will give you an introduction to how MySQL locks can be used for concurrency control and guarantee data integrity while allowing multiple users or sessions to safely interact with data. I will also write about the popular types of MySQL locks.

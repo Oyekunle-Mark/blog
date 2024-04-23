@@ -4,6 +4,7 @@ date: 2024-02-20
 description: "Run a Command at Interval, Unintrusively"
 summary: "A not so uncommon usecase is needing to run a command repeatedly at fixed intervals, without losing control of your shell. Doing this in the Linux shell is particularly trivial."
 draft: false
+tags: ["terminal"]
 ---
 
 A not so uncommon usecase is needing to run a command repeatedly at fixed intervals, without losing control of your shell.
