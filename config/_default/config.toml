@@ -6,7 +6,7 @@ baseURL = "https://oyeoloyede.com/"
 defaultContentLanguage = "en"
 
 enableRobotsTXT = true
-paginate = 10
+paginate = 5
 summaryLength = 0
 
 [outputs]
