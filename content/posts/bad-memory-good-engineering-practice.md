@@ -25,11 +25,11 @@ I believe that it is this assumption about our memory that will set up free, and
 
 I will end this article by quoting this riddle that Gollum asked Bilbo in The Hobbit[^1].
 
-> This thing all things devours;
-> Birds, beasts, trees, flowers;
-> Gnaws iron, bites steel;
-> Grinds hard stones to meal;
-> Slays king, ruins town,
+> This thing all things devours;\
+> Birds, beasts, trees, flowers;\
+> Gnaws iron, bites steel;\
+> Grinds hard stones to meal;\
+> Slays king, ruins town,\
 > And beats mountain down
 
 [^1]: [The Hobbit](https://en.wikipedia.org/wiki/The_Hobbit)
