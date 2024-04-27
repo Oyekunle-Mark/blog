@@ -24,8 +24,8 @@ For the minimal kernel we will be writing, we will end up with these files at th
 └── linker.ld
 ```
 
-**boot.s**: x86 assembly to start up the kernel and setup the stack
-**kernel.c**: Main kernel code in C that uses VGA text mode[^2] to write to the screen
+**boot.s**: x86 assembly to start up the kernel and setup the stack.\
+**kernel.c**: Main kernel code in C that uses VGA text mode[^2] to write to the screen.\
 **linker.ld**: Linker script for setting up the final ELF[^3] file and placing the Multiboot[^4] header in place in the final kernel image.
 
 All the code that will be shared will be heavily commented to make them self-explanatory. Additional explanation will be provided under each code block to provide link to specifications that explains key concepts.
@@ -53,11 +53,11 @@ The [VGA text mode wikipeadia page](https://en.wikipedia.org/wiki/VGA_text_mode)
 /* place linker script here */
 ```
 
-The link scripts allows us to explicitly define how the final kernel executable should be built. We can specify alignment, address offset and sections of the output file. The [GNU Linker](https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_chapter/ld_3.html) documentation on the ld command language is a recommended read for understanding link scripts.
+The linker scripts allows us to explicitly define how the final kernel executable should be built. We can specify alignment, address offset and sections of the output file. The [GNU Linker](https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_chapter/ld_3.html) documentation on the ld command language is a recommended read for understanding link scripts.
 
 ## Compiling and Linking
 
-How you invoke your cross-compiler might be different based on how you install it. So modify the commands in this section to use the right cross-compiler invocation.
+How you invoke your cross-compiler might be different based on how you installed it. So modify the commands in this section to use the right cross-compiler invocation.
 
 We start by assembling the *boot.s* file with:
 
@@ -107,9 +107,9 @@ You should see something like this:
 
 Congratulations!!!
 
-[^1]: point to xv6's source
-[^2]: vga text mode
-[^3]: elf
-[^4]: multiboot spec
-[^5]: grub
-[^6]: qemu
+[^1]: [The xv6 OS](https://pdos.csail.mit.edu/6.828/2023/xv6.html)
+[^2]: [VGA Text Mode](https://en.wikipedia.org/wiki/VGA_text_mode)
+[^3]: [Executable and Linkable Format](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format)
+[^4]: [Multiboot Specification](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html)
+[^5]: [GRUB](https://www.gnu.org/software/grub/)
+[^6]: [QEMU](https://www.qemu.org/)
