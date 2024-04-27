@@ -57,8 +57,8 @@ fingerprintAlgorithm = "sha256"
   showBreadcrumbs = true
   showSummary = true
   showTableOfContents = true
-  showTaxonomies = false
-  groupByYear = true
+  showTaxonomies = true
+  groupByYear = false
   paginationWidth = 1
 
 [sitemap]

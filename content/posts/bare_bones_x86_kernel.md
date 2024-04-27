@@ -103,7 +103,7 @@ qemu-system-i386 -kernel my_kernel.elf
 
 You should see something like this:
 
-![screen shot of the kernel printing the welcome message]()
+![screen shot of the kernel printing the welcome message](https://i.imgur.com/elD5Iz5.png)
 
 Congratulations!!!
 
