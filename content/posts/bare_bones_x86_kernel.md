@@ -32,8 +32,49 @@ All the code that will be shared will be heavily commented on to make them self-
 
 ### boot.s
 
-```assembly
-// boot.s file gets inserted here
+```asm
+/*
+An OS image must contain an additional header called Multiboot header, besides the headers of the format used by the OS image.
+The Multiboot header must be contained completely within the first 8192 bytes of the OS image, and must be longword (32-bit) aligned.
+In general, it should come as early as possible, and may be embedded in the beginning of the text segment after the real executable header.
+*/
+.set MULTIBOOT_MAGIC, 		0x1BADB002 // The field ‘magic’ is the magic number identifying the header, which must be the hexadecimal value 0x1BADB002.
+.set MULTIBOOT_ALIGN, 		1 << 0
+.set MULTIBOOT_MEMINFO, 	1 << 1
+.set MULTIBOOT_FLAGS,		MULTIBOOT_ALIGN | MULTIBOOT_MEMINFO // The field ‘flags’ specifies features that the OS image requests or requires of an boot loader
+.set MULTIBOOT_CHECKSUM,	(0 -(MULTIBOOT_MAGIC + MULTIBOOT_FLAGS)) // The field ‘checksum’ is a 32-bit unsigned value which, when added to the other magic fields (i.e. ‘magic’ and ‘flags’), must have a 32-bit unsigned sum of zero.
+
+// section for the magic fields of Multiboot header
+.section .multiboot
+.align 4
+.long MULTIBOOT_MAGIC
+.long MULTIBOOT_FLAGS
+.long MULTIBOOT_CHECKSUM
+
+.section .bss
+.align 16 // x86 required a 16-bytes aligned stack
+stack_bottom:
+	.skip 4096 // reserve 4kb for the stack
+stack_top:
+
+.section .text
+.global start
+// starting point of our kernel
+start:
+	/*
+	We must first setup the stack. To do that, we set a value for *%esp* register, the stack pointer
+	On x86, the stack grows downward.
+	*/
+	mov $stack_top, %esp
+
+	// call the *kernel_main* function we will write later in *kernel.c*.
+	call kernel_main
+
+// we shouldn't return from *kernel_main*, if we do, we will hang up the CPU
+loop:
+	cli // disables CPU interrupts
+	hlt // halt
+	jmp loop // if we do end up here, loop back
 ```
 
 The [Multiboot Specification](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html) describes the multiboot headers and how to place them. I recommend you read that document.
@@ -41,7 +82,104 @@ The [Multiboot Specification](https://www.gnu.org/software/grub/manual/multiboot
 ### kernel.c
 
 ```c
-// kernel.c file gets inserted here
+#include <stddef.h>
+#include <stdint.h>
+
+/* Check if the compiler thinks you are targeting the wrong operating system. */
+#if defined(__linux__)
+	#error "This program is not being compiled with a cross-compiler"
+#endif
+ 
+/* This tutorial will only work for the 32-bit ix86 targets. */
+#if !defined(__i386__)
+	#error "This program is meant to target ix86"
+#endif
+
+// VGA text mode console is 80 columns by 25 rows
+const size_t VGA_ROWS = 25;
+const size_t VGA_COLS = 80;
+
+// The VGA text buffer is located at physical memory address 0xB8000
+uint16_t* vga_buffer = (uint16_t*)0xB8000;
+
+size_t row_index = 0;
+size_t col_index = 0;
+
+// uint8_t VGA_COLOR_BLACK = 0;
+// uint8_t VGA_COLOR_WHITE = 15;
+// we are shifting the backgroud color left by 4 and bit ORing with the foregroud color
+uint8_t terminal_color = 0 << 4 | 15;
+
+/**
+ * terminal_initialize clears the entire screen
+ * by writing blank, the space character
+ */
+void terminal_initialize()
+{
+	for(size_t col = 0; col < VGA_COLS; col++)
+	{
+		for(size_t row = 0; row < VGA_ROWS; row++)
+		{
+			const size_t index = (VGA_COLS * row) + col;
+			// shift terminal color to it's place and set the character code point to blank
+			vga_buffer[index] = ((uint16_t)terminal_color << 8) | ' ';
+		}
+	}
+}
+
+/**
+ * terminal_write_char writes a single character to the terminal.
+ * Accounts for newlines
+ */
+void terminal_write_char(char c)
+{
+	switch(c)
+	{
+		case '\n':
+		{
+			col_index = 0;
+			row_index++;
+			break;
+		}
+		default:
+		{
+			const size_t index = (VGA_COLS * row_index) + col_index;
+			vga_buffer[index] = ((uint16_t)terminal_color << 8) | c;
+			col_index++;
+			break;
+		}
+	}
+
+	if (col_index == VGA_COLS)
+	{
+		col_index = 0;
+		row_index++; 
+	}
+
+	if (row_index == VGA_ROWS)
+	{
+		row_index = 0;
+		col_index = 0; 
+	}
+}
+
+/**
+ * terminal_write_string writes each character in the
+ * string to the terminal.
+ */
+void terminal_write_string(const char* str)
+{
+	for(size_t i = 0; str[i] != '\0'; i++)
+		terminal_write_char(str[i]);
+}
+
+void kernel_main()
+{
+	terminal_initialize();
+
+	terminal_write_string("Hello, world!\n");
+	terminal_write_string("This is my first kernel. :)\n");
+}
 ```
 
 We don't have access to the C standard library since we will compile our code in *freestanding*. We have access to a few headers for fixed-width integers, which allows us to use the two includes above. 
@@ -49,8 +187,42 @@ The [VGA text mode Wikipedia page](https://en.wikipedia.org/wiki/VGA_text_mode) 
 
 ### linker.ld
 
-```text
-/* place linker script here */
+```ld
+/* Our designated starting point. The symbol created in *boot.s*. The bootloader will begin execution here*/
+ENTRY(start)
+
+SECTIONS
+{
+	/* start placing sections at 1 MB */
+	. = 1M;
+
+	/* all sections are 4 kb aligned to accomodate paging later on */
+	/* place multiboot header first followed by read only data */
+	.rodata BLOCK(4K) : ALIGN(4K)
+	{
+		*(.multiboot)
+		*(.rodata)
+	}
+
+	/* executable code */
+	.text BLOCK(4K) : ALIGN(4K)
+	{
+		*(.text)
+	}
+
+	/* initialized data */
+	.data BLOCK(4K) : ALIGN(4K)
+	{
+		*(.data)
+	}
+
+	/* uninitialzed data and stack */
+	.bss BLOCK(4K) : ALIGN(4K)
+	{
+		*(COMMON)
+		*(.bss)
+	}
+}
 ```
 
 The linker script allows us to explicitly define how the final kernel executable should be built. We can specify alignment, address offset and sections of the output file. The [GNU Linker](https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_chapter/ld_3.html) documentation on the ld command language is a recommended read for understanding link scripts.
