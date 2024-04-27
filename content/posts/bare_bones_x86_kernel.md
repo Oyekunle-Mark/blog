@@ -4,7 +4,7 @@ date: 2024-04-27
 description: "Writing a Bare Bones x86 Kernel"
 summary: "In this tutorial, we will write a simple kernel for 32-bit x86 and boot it."
 tags: ["osdev", "C"]
-draft: true
+draft: false
 ---
 
 My interest was piqued by operating systems recently and I have been spending more and more time learning how they work and how they are built. After working my way through most of the xv6 labs[^1], I decided to invest time reading and trying out the tutorials on [osdev wiki](https://wiki.osdev.org/Main_Page) because I wanted to find my way without the guard rails provided by the xv6 course. This article is the result of my trying out the [Bare Bones tutorial](https://wiki.osdev.org/Bare_Bones) on the wiki.
