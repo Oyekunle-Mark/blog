@@ -4,7 +4,7 @@ date: 2024-04-30
 description: "Before you begin to learn something new, be convinced that learning that thing serves a purpose."
 summary: "Learning is an investment. Of time and other resources. Before starting one on a new topic, it is worth the thoughtful consideration to find the purpose the learning would serve to prevent overwhelming yourself with too many learning commitments than you can manage."
 tags: ["opinion-pieces"]
-draft: true
+draft: false
 ---
 
 I love to learn. The mere experience of finding information I did not know of, and building an understanding of a new topic is something I enjoy. In the past, I have found myself jumping into the process of learning something new, before considering why I should learn that thing. This has gotten me into cases where I have stretched myself too thin.
