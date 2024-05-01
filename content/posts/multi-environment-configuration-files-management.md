@@ -31,9 +31,11 @@ util2/ # same as above
     ...
     ...
 build.sh # build the config files for this environment.
+init.sh # first time setup of aliases required to add path to git dir. Can use realpath "$0". Should call build.sh to finish setup
+
 Does:
 1. reads and parses .config_setup
 2. optionally builds the config files for all utilities this environment needs by:
     a. reading common
     b. reading a file with the same env name and merging with common
-3. adds the aliases to make syncing the config files and building them easy from any location
+3. [init.sh] adds the aliases to make syncing the config files and building them easy from any location
