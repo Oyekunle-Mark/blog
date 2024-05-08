@@ -50,6 +50,8 @@ We need a basic config that should work on our current architecture. We can get 
 make defconfig
 ```
 
+Open this new config file(`.config`) in your editor of choice and update `CONFIG_LOCALVERSION` to something appropriate(like *dev_kernel*) to prevent the risk of overwriting an existing kernel by mistake.
+
 An optional change we can make is to disable `CONFIG_MODULES`. I will not be making this config change, but if you wish to do so, first start the config GUI with:
 
 ```sh
