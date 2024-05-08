@@ -44,22 +44,13 @@ cd linux
 
 ### Configure the kernel
 
-We need a basic config that should work on our current architecture. We can get that with:
+We need a basic config that should work on our current architecture. You can copy the config file of your running kernel with:
 
 ```sh
-make defconfig
+cp /boot/config-`uname -r`* .config
 ```
 
 Open this new config file(`.config`) in your editor of choice and update `CONFIG_LOCALVERSION` to something appropriate(like *dev_kernel*) to prevent the risk of overwriting an existing kernel by mistake.
-
-An optional change we can make is to disable `CONFIG_MODULES`. I will not be making this config change, but if you wish to do so, first start the config GUI with:
-
-```sh
-make menuconfig
-```
-
-Then type `/MODULES`, press enter to search, press `1` to take us to the first match, then press `n` to disable this option.
-Save, and exit.
 
 ### Building the kernel
 
@@ -170,4 +161,4 @@ After updating the grub config file, we need to tell grub to rewrite some automa
 sudo update-grub2
 ```
 
-Now, you can reboot into your new kernel.
+Now, you can reboot, and choose your kernel at the grub menu during startup. 
