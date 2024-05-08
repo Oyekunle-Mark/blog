@@ -135,3 +135,37 @@ kvm -cpu host -kernel arch/x86/boot/bzImage -append "console=ttyS0" -initrd ramd
 Success! We are able to boot into the kernel in a VM.
 
 ## Running natively
+
+## Installing the kernel
+
+Install the kernel with:
+
+```sh
+sudo make modules_install install
+```
+
+The install script installed the kernel to `/boot/` and modules to `/lib/modules/<version>/`. Linux stores both old and new versions of the kernel so you can use `ls -al` on those folders to view the version and metadata information of your newly installed kernel and modules.
+
+## Running the kernel
+
+As mentioned above, different versions of the kernel are stored, and we can chosse which to boot into at system start.
+
+We have to update the grub configuration file to ensure we have the option of choosing kernel to boot into, and some other options like timeout legth.
+
+Open the grup config file with:
+
+```sh
+sudo vim /etc/default/grub
+```
+
+You want to delete `GRUB_HIDDEN_TIMEOUT=0` or `GRUB_HIDDEN_TIMEOUT_QUIET=true` if you have them in your config.
+
+Also, set the `GRUB_TIMEOUT` value to something convenient. I'm going with `60`. We also want to add `GRUB_TIMEOUT_STYLE=menu`.
+
+After updating the grub config file, we need to tell grub to rewrite some automatically generated files with:
+
+```sh
+sudo update-grub2
+```
+
+Now, you can reboot into your new kernel.
