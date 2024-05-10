@@ -2,17 +2,18 @@
 title: "Build and Boot a Custom Linux Kernel"
 date: 2024-05-08
 description: "Setup for kernel hacking."
-summary: "This tutorial shows you how to get setup your environment for Linux kernel hacking. We will install the required dependencies, build, and boot into the Linux kernel."
+summary: "This tutorial shows you how to setup your environment for Linux kernel hacking. We will install the required dependencies, build, and boot into the Linux kernel."
 tags: ["C", "linux", "osdev"]
 draft: true
 ---
 
-You will expect to run a program after making changes to it. The same is expected even when hacking on a real kernel. This article will document how to install the required packages, build and run the Linux on QEMU and debug the kernel with the GDB debugger.
-I will be using  a Debian distribution to run all commands provided, you might need to modify them if you are using an non-debian based distribution.
+You will expect to run a program after making changes to it. The same is expected even when hacking a kernel. This article will document how to install the required packages, build and run the Linux on QEMU along with a pointer to wwhere to get started with debugging the kernel with the GDB debugger.
+
+I will be using  a Debian distribution to run all the commands provided, you might need to modify some of them if you are using a non-debian based distribution.
 
 ## Install the required packages
 
-The kernel is written in C, so we add the usuall assortment of C development packages and some osdev related packages:
+The kernel is written in C, so we add the usual assortment of C development packages and some osdev related packages:
 
 ```sh
 sudo apt-get install vim libncurses5-dev gcc make git exuberant-ctags libssl-dev bison flex libelf-dev bc dwarves zstd git-email fakeroot
@@ -50,9 +51,9 @@ cd linux
 
 ### Configure the kernel
 
-We need a config file that would work on an `x86_46` architecture. You can the config file that will be used as base for the `x86_46` architecture in `arch/x86/configs/x86_46_defconfig`. 
+We need a config file that would work on an `x86_64` architecture. You can find the config file that will be used as a base for the `x86_64` architecture in `arch/x86/configs/x86_64_defconfig`. 
 
-Create on such config file with:
+Create one such config file with:
 
 ```sh
 make ARCH=x86_64 x86_64_defconfig
@@ -66,6 +67,8 @@ make ARCH=x86_64 x86_64_defconfig
 make -j6
 ```
 
+The kernel will be built into `/arch/x86/boot/bzImage`.
+
 ## Run the kernel
 
 Boot into the kernel in the VM with:
@@ -74,7 +77,7 @@ Boot into the kernel in the VM with:
 kvm -cpu host -hda /dev/zero -kernel arch/x86/boot/bzImage -append "console=ttyS0 root=/dev/zero" -serial stdio -display none -m 1G
 ```
 
-That did not go as planned for me. The kernel panicked because it could not find a root filesystem. Here's a snippet of the output:
+That did not go as planned. The kernel panicked because it could not find a root filesystem. Here's a snippet of the output:
 
 ```sh
 [    1.183672] Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0)
@@ -119,7 +122,9 @@ make menuconfig
 
 Choose **Target options** and ensure you have the `i586` architecture selected. This was selected by default when I checked under the **Target options -> i586 Architecture variants** options.
 
-Next, navigate back to the first page of the menu and choose **Filesystem images**. Enable the **ext2/3/4 root file system** option under it. Choose the variat option and select **ext4**.
+Next, navigate back to the first page of the menu and choose **Filesystem images**. Enable the **ext2/3/4 root file system** option under it. Choose the variat option and enable **ext4**.
+
+Save, and exit. This creates the required `.config` file.
 
 Then, build with:
 
@@ -168,24 +173,24 @@ root
 Module                  Size  Used by    Not tainted
 ```
 
-Now that we can successfully boot into the kernel, let's improve our ability to debut it.
+Now that we can successfully boot into the kernel.
 
 ## Add the QEMU GDB support
 
-To debug the kernel with QEMU and GDB, we need to build the kernel with config options that enable debugging. You can update your config with:
+To debug the kernel with QEMU and GDB, we need to build the kernel with a config file that enable debugging options. You can update your config with:
 
 ```sh
 make menuconfig
 ```
 
-Find a specific option you want to turn on or off by pressing `/<SEARCH_CONFIG_TERM>`, press enter to see the option and use the numbers presented to locate where to enable/disable the option.
+Find a specific option you want to turn on or off by pressing `/<CONFIG_XXXXX>`, press enter to see the option and use the numbers presented to locate where to enable/disable the option.
 
-This [page](https://docs.kernel.org/dev-tools/gdb-kernel-debugging.html) provides the information required for debugging the kernel(v6.9) and modules via gdb.
+This [page](https://docs.kernel.org/dev-tools/gdb-kernel-debugging.html) provides the information required for debugging the kernel(v6.9) and modules via gdb. Follow it to find the config required for kernel debugging, and how to have GDB debug your custom kernel.
 
 ## Conclusion and next steps
 
 Operating system development is a painful undertaking. Even when it involves an already matured kernel like Linux. The ability to quickly run the kernel in a VM like QEMU and attach GDB to it for debugging makes the experience less of a pain.
 
-For next steps, I will be diving into [Understanding the Linux Kernel](https://amzn.eu/d/cmMIN5d). The book is dated, but I expect it to be sufficient in getting me from kernel noob, to being ready to fearlessly hack the kernel(if such a state of mind is even possible). You might be seeing more posts from me on the Linux Kernel Internals as I read the book and dive into the implementation of the kernel.
+For next steps, I will be diving into [Understanding the Linux Kernel](https://amzn.eu/d/cmMIN5d). The book is dated, but I expect it to be sufficient in getting me from kernel noob, to being ready to fearlessly hack the kernel(if such a state of mind is even possible). You might be seeing more posts from me on the Linux kernel internals as I progress through the book and dive into the implementation(in code) of the kernel.
 
 Thanks for following along.
