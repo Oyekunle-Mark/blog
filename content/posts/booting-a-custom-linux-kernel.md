@@ -171,3 +171,21 @@ Module                  Size  Used by    Not tainted
 Now that we can successfully boot into the kernel, let's improve our ability to debut it.
 
 ## Add the QEMU GDB support
+
+To debug the kernel with QEMU and GDB, we need to build the kernel with config options that enable debugging. You can update your config with:
+
+```sh
+make menuconfig
+```
+
+Find a specific option you want to turn on or off by pressing `/<SEARCH_CONFIG_TERM>`, press enter to see the option and use the numbers presented to locate where to enable/disable the option.
+
+This [page](https://docs.kernel.org/dev-tools/gdb-kernel-debugging.html) provides the information required for debugging the kernel(v6.9) and modules via gdb.
+
+## Conclusion and next steps
+
+Operating system development is a painful undertaking. Even when it involves an already matured kernel like Linux. The ability to quickly run the kernel in a VM like QEMU and attach GDB to it for debugging makes the experience less of a pain.
+
+For next steps, I will be diving into [Understanding the Linux Kernel](https://amzn.eu/d/cmMIN5d). The book is dated, but I expect it to be sufficient in getting me from kernel noob, to being ready to fearlessly hack the kernel(if such a state of mind is even possible). You might be seeing more posts from me on the Linux Kernel Internals as I read the book and dive into the implementation of the kernel.
+
+Thanks for following along.
