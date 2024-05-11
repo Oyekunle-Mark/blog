@@ -173,7 +173,7 @@ root
 Module                  Size  Used by    Not tainted
 ```
 
-Now that we can successfully boot into the kernel.
+Now we can successfully boot into the kernel.
 
 ## Add the QEMU GDB support
 
@@ -183,7 +183,7 @@ To debug the kernel with QEMU and GDB, we need to build the kernel with a config
 make menuconfig
 ```
 
-Find a specific option you want to turn on or off by pressing `/<CONFIG_XXXXX>`, press enter to see the option and use the numbers presented to locate where to enable/disable the option.
+Find a specific option you want to turn on or off by pressing `/<CONFIG_XXXXX>`, press enter to search and use the press the numbers presented to locate where to enable/disable the option.
 
 This [page](https://docs.kernel.org/dev-tools/gdb-kernel-debugging.html) provides the information required for debugging the kernel(v6.9) and modules via gdb. Follow it to find the config required for kernel debugging, and how to have GDB debug your custom kernel.
 
