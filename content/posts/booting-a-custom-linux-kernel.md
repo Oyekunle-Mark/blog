@@ -2,18 +2,18 @@
 title: "Build and Boot a Custom Linux Kernel"
 date: 2024-05-08
 description: "Setup for kernel hacking."
-summary: "This tutorial shows you how to setup your environment for Linux kernel hacking. We will install the required dependencies, build, and boot into the Linux kernel."
+summary: "This tutorial shows you how to set up your environment for Linux kernel hacking. We will install the required dependencies, build, and boot into the Linux kernel."
 tags: ["C", "linux", "osdev"]
 draft: true
 ---
 
-You will expect to run a program after making changes to it. The same is expected even when hacking a kernel. This article will document how to install the required packages, build and run Linux on QEMU along with a pointer to where to get started with debugging the kernel with the GDB debugger.
+You will expect to run a program after making changes to it. The same is expected even when hacking a kernel. This article will document how to install the required packages and build and run Linux on QEMU along with a pointer to where to get started with debugging the kernel with the GDB debugger.
 
-I will be using a Debian distribution to run all the commands provided. You might need to modify some of them if you are using a non-debian based distribution.
+I will be using a Debian distribution to run all the commands provided. You might need to modify some of them if you are using a non-debian-based distribution.
 
 ## Install the required packages
 
-The kernel is written in C, so we add the usual assortment of C development packages and some osdev related packages:
+The kernel is written in C, so we add the usual assortment of C development packages and some osdev-related packages:
 
 ```sh
 sudo apt-get install vim libncurses5-dev gcc make git exuberant-ctags libssl-dev bison flex libelf-dev bc dwarves zstd git-email fakeroot
@@ -61,7 +61,7 @@ make ARCH=x86_64 x86_64_defconfig
 
 ### Build the kernel
 
-`make jX` will build the kernel, where `X` is replaced with the number of core on your machine. On my 6-core computer, I use:
+`make jX` will build the kernel, where `X` is replaced with the number of cores on your machine. On my 6-core computer, I use:
 
 ```sh
 make -j6
@@ -103,9 +103,9 @@ We will need to build a root file system and pass that to QEMU when we boot the 
 
 ### Build a root file system
 
-We will use buildroot to build a root file system.
+We will use Buildroot to build a root file system.
 
-First, we navigate to the parent directory of our `linux` working directory, clone the buildroot project and cd into it:
+First, we navigate to the parent directory of our `linux` working directory, clone the Buildroot project and cd into it:
 
 ```sh
 git clone git://git.buildroot.net/buildroot
@@ -142,7 +142,7 @@ kvm -cpu host -hda ../buildroot/output/images/rootfs.ext4 -kernel arch/x86/boot/
 
 We also added the `nokaslr` option to *append*. That turns off the [Linux kernel address space layout randomization](https://lwn.net/Articles/569635/).
 
-Buildroot uses `root` as the default login user without password.
+Buildroot uses `root` as the default login user without a password.
 
 ```sh
 [    1.420582] EXT4-fs (sda): mounted filesystem 60764e06-39d9-40d0-a708-c9a1b09d76e9 r/w with ordered data mode. Quota mode: none.
@@ -177,7 +177,7 @@ Now that we can successfully boot into the kernel.
 
 ## Add the QEMU GDB support
 
-To debug the kernel with QEMU and GDB, we need to build the kernel with a config file debugging options enabled. You can update your config with:
+To debug the kernel with QEMU and GDB, we need to build the kernel with a config file with debugging options enabled. You can update your config with:
 
 ```sh
 make menuconfig
@@ -189,8 +189,8 @@ This [page](https://docs.kernel.org/dev-tools/gdb-kernel-debugging.html) provide
 
 ## Conclusion and next steps
 
-Operating system development is a painful undertaking. Even when it involves learning to read and make small changes to the codebase of an already matured kernel like Linux. The ability to quickly run the kernel in a VM like QEMU and attach GDB to it for debugging makes the experience less of a pain.
+Operating system development is a painful undertaking. Even when it involves learning to read and make small changes to the codebase of an already-matured kernel like Linux. The ability to quickly run the kernel in a VM like QEMU and attach GDB to it for debugging makes the experience less of a pain.
 
-For next steps, I will be diving into [Understanding the Linux Kernel](https://amzn.eu/d/cmMIN5d). The book is dated, but I expect it to be sufficient in getting me from kernel noob, to being ready to hack the kernel. You might be seeing more posts from me on the Linux kernel internals as I progress through the book and dive into the implementation of the kernel.
+For the next steps, I will be diving into [Understanding the Linux Kernel](https://amzn.eu/d/cmMIN5d). The book is dated, but I expect it to be sufficient in getting me from kernel noob to being ready to hack the kernel. You might be seeing more posts from me on the Linux kernel internals as I progress through the book and dive into the implementation of the kernel.
 
 Thanks for following along.
