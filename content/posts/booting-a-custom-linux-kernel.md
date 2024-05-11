@@ -4,7 +4,7 @@ date: 2024-05-08
 description: "Setup for kernel hacking."
 summary: "This tutorial shows you how to set up your environment for Linux kernel hacking. We will install the required dependencies, build, and boot into the Linux kernel."
 tags: ["C", "linux", "osdev"]
-draft: true
+draft: false
 ---
 
 You will expect to run a program after making changes to it. The same is expected even when hacking a kernel. This article will document how to install the required packages and build and run Linux on QEMU along with a pointer to where to get started with debugging the kernel with the GDB debugger.
