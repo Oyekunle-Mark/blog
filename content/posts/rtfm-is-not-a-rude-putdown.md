@@ -1,5 +1,5 @@
 ---
-title: "RTFM Is Not a Putdown"
+title: '"RTFM" Is Not a Putdown'
 date: 2024-05-12
 description: "Really, read the manual."
 summary: "The documentation/specification/manual of that topic you're struggling with provides the clarity you need. Save yourself the Google searches, articles, forum questions, trials and errors. RTFM is not a rude response. It is the gospel."
