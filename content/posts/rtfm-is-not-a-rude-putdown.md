@@ -17,4 +17,4 @@ I let that spur me on and read the fine print of every tool I needed. I wouldn't
 
 The next time I came across a response that nudged me to RTFM, I was gracious. No more would I consider it a rebuttal by masochists. The documentation/specification/manual of that topic you're struggling with provides the clarity you need. Save yourself the Google searches, articles, forum questions, trials and errors. RTFM is not a rude response. It is the gospel.
 
-> (n * 60) minutes of debugging can save your n minutes of reading the documentation.
+> (n * 60) minutes of debugging can save you n minutes of reading the documentation.
