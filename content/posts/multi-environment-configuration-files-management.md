@@ -38,4 +38,6 @@ Does:
 2. optionally builds the config files for all utilities this environment needs by:
     a. reading common
     b. reading a file with the same env name and merging with common
+    c. executes setup script for each utility
 3. [init.sh] adds the aliases to make syncing the config files and building them easy from any location
+4. prints descriptive messages before, during and after setup
