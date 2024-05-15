@@ -7,4 +7,9 @@ tags: ["C", "linux", "osdev"]
 draft: true
 ---
 
+## Installing dependencies
 
+```sh
+sudo apt-get install build-essential vim git cscope libncurses-dev libssl-dev bison flex
+sudo apt-get install git-email
+```
