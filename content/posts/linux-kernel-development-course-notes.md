@@ -13,3 +13,12 @@ draft: true
 sudo apt-get install build-essential vim git cscope libncurses-dev libssl-dev bison flex
 sudo apt-get install git-email
 ```
+
+## Setup email client
+
+TODO: *
+
+https://www.kernel.org/doc/html/latest/process/email-clients.html
+https://kernelnewbies.org/FirstKernelPatch
+
+
