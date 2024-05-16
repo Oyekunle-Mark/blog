@@ -21,6 +21,7 @@ structure:
 
 .config_setup.sh # file, git ignored, provides value for
 env: env1
+shell: zsh/bash # tell init.sh the default shell so the convenient alias for updating the config files and keeping in sync with remote repo
 utilities: util1,util2 # list of all the config files to be built for this environment 
 
 util1/  # for each terminal utility requiring config files
