@@ -26,6 +26,7 @@ utilities: util1,util2 # list of all the config files to be built for this envir
 util1/  # for each terminal utility requiring config files
     common # will be present in all environments
     env1 # will be present  on machine where env is set to 'env1' in the .config_setup file
+    .private # not checked into git, will contain sensitive information we want on our local machine alone
     setup # script to setup the config file for the utility. like creating the folders in the right path and sym linking
 util2/ # same as above
     ...
@@ -38,6 +39,7 @@ Does:
 2. optionally builds the config files for all utilities this environment needs by:
     a. reading common
     b. reading a file with the same env name and merging with common
-    c. executes setup script for each utility
+    c. reading the .private file, if one exist, and merging with the result from [b] above.
+    d. executes setup script for each utility
 3. [init.sh] adds the aliases to make syncing the config files and building them easy from any location
 4. prints descriptive messages before, during and after setup
