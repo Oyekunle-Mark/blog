@@ -19,7 +19,7 @@ new usecase:
 
 structure:
 
-.config_setup.sh # file, git ignored, provides value for
+.setup # file, git ignored, provides value for
 env: env1
 shell: zsh/bash # tell init.sh the default shell so the convenient alias for updating the config files and keeping in sync with remote repo
 utilities: util1,util2 # list of all the config files to be built for this environment 
@@ -28,7 +28,7 @@ util1/  # for each terminal utility requiring config files
     common # will be present in all environments
     env1 # will be present  on machine where env is set to 'env1' in the .config_setup file
     .private # not checked into git, will contain sensitive information we want on our local machine alone
-    setup # script to setup the config file for the utility. like creating the folders in the right path and sym linking
+    setup.sh # script to setup the config file for the utility. like creating the folders in the right path and sym linking
 util2/ # same as above
     ...
     ...
