@@ -7,7 +7,7 @@ draft: false
 tags: ["config", "terminal"]
 ---
 
-<mark>**NOTE:**</mark>This article, and the code in the GitHub repository shared, have been superseded by changes described in this [follow up article]({{< ref "/posts/multi-environment-configuration-files-management.md" >}}).
+<mark>**NOTE:**</mark>This article, and the code in the shared GitHub repository, have been superseded by changes described in this [follow up article]({{< ref "/posts/multi-environment-configuration-files-management.md" >}}).
 
 Until 2024, I didn't have a big need to customise terminal commands and utilities. I used Visual Studio Code heavily, its CLI interface was good enough for me when I needed to use the terminal. My choice to switch to a more terminal-native environment has led me to learn how to be comfortable with Vim and Tmux, and I use these tools both for work and personal use now.
 
