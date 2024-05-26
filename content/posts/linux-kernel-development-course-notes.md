@@ -39,6 +39,20 @@ git config --global sendemail.smtppass <password here>
 
 Follow this to complete setup: https://stackoverflow.com/questions/68238912/how-to-configure-and-use-git-send-email-to-work-with-gmail-to-email-patches-to
 
+## Exploring the linux kernel sources
+
+```sh
+cd /linux_work
+git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git linux_mainline
+cd linux_mainline; ls -h
+```
+
+You can prepare a patch for any commit using:
+
+```sh
+git format-patch 1 <commit-id>
+```
+
 
 TODO: *
 
