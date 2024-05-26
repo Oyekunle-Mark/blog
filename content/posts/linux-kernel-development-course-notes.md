@@ -178,14 +178,3 @@ sudo update-grub
 Now, it’s time to restart the system. Once the new kernel comes up, compare the saved dmesg from the old kernel with the new one, and see if there are any regressions. If the newly installed kernel fails to boot, you will have to boot a good kernel, and then investigate why the new kernel failed to boot.​
 
 These steps are not specific to stable kernels. You can check out linux mainline or linux-next and follow the same recipe of generating a new configuration from an oldconfig, build, and install the mainline or linux-next kernels.
-
-
-
-
-
-TODO: *
-
-https://www.kernel.org/doc/html/latest/process/email-clients.html
-https://kernelnewbies.org/FirstKernelPatch
-
-
