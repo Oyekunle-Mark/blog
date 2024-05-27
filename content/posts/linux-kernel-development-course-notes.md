@@ -473,3 +473,74 @@ If you have a custom compiled Linux kernel running, you need to remove the follo
 
 Then:
     Update grub configuration file with sudo update-grub
+
+## Applying patches
+
+As we already talked about, the Linux kernel patch files are text files that contain the differences from the original source to the new source. Each Linux patch is a self-contained change to the code that stands on its own, unless explicitly made part of a patch series. New patches are applied as follows:
+
+patch -p1 < file.patch
+git apply --index file.patch
+
+Either command will work; however, when a patch adds a new file and, if it is applied using the patch command, git does not know about the new files, and they will be treated as untracked files. The git diff command will not show the files in its output and the git status command will show the files as untracked. You can use git diff HEAD to see the changes.
+
+For the most part, there are no issues with building and installing kernels; however, the git reset --hard command will not remove the newly created files and a subsequent git pull will fail.
+
+Click to learn a couple of ways to tell git about the new files and have it track them, thereby avoiding the above issues.
+
+Available Options
+
+Option 1
+
+When a patch that adds new files is applied using the patch command, run git clean to remove untracked files before running git reset --hard. For example, git clean -dfx will force the removal of untracked directories and files, ignoring any standard ignore rules specified in the .gitignore file. You could include the -q option to run git clean in quiet mode, if you do not care to know which files are removed.​
+Option 2
+
+An alternate approach is to tell git to track the newly added files by running git apply --index file.patch. This will result in git applying the patch and adding the result to the index. Once this is done, git diff will show the newly added files in its output and git status will report the status correctly, tagging these files as newly created files.
+
+## Basic testing
+
+Once a new kernel is installed, the next step is to try to boot it and see what happens. Once the new kernel is up and running, check dmesg for any regressions. Run a few usage tests:
+
+    Is networking (wifi or wired) functional?
+    Does ssh work?
+    Run rsync of a large file over ssh
+    Run git clone and git pull
+    Start a web browser
+    Read email
+    Download files: ftp, wget, etc.
+    Play audio/video files
+    Connect new USB devices - mouse, USB stick, etc.
+
+## Examining kernel logs
+
+Checking for regressions in dmesg is a good way to identify problems, if any, introduced by the new code. As a general rule, there should be no new crit, alert, and emerg level messages in dmesg. There should be no new err level messages. Pay close attention to any new warn level messages as well. Please note that new warn messages are not as bad. At times, new code adds new warning messages which are just warnings.
+
+dmesg -t -l emerg
+dmesg -t -l crit
+dmesg -t -l alert
+dmesg -t -l err
+dmesg -t -l warn
+dmesg -t -k
+dmesg -t
+
+Are there any stack traces resulting from WARN_ON in the dmesg? These are serious problems that require further investigation.
+
+## Stress testing
+
+Running three to four kernel compiles in parallel is a good overall stress test. Download a few Linux kernel gits, stable, linux-next etc. Run timed compiles in parallel. Compare times with old runs of this test for regressions in performance. Longer compile times could be indicators of performance regression in one of the kernel modules. 
+
+Performance problems are hard to debug. The first step is to detect them. Running several compiles in parallel is a good overall stress test that could be used as a performance regression test and overall kernel regression test, as it exercises various kernel modules like memory, filesystems, dma, and drivers.
+
+time make all
+
+## Debug options and proactive testing
+
+As you are making changes to drivers and other areas in the kernel, there are a few things to watch out for. There are several configuration options to test for locking imbalances and deadlocks. It is important to remember to enable the Lock Debugging and CONFIG_KASAN for memory leak detection. We do not intend to cover debugging in depth in this chapter, but we want you to start thinking about debugging and configuration options that facilitate debugging. Enabling the following configuration option is recommended for testing your changes to the kernel:
+
+CONFIG_KASAN
+CONFIG_KMSAN
+CONFIG_UBSAN
+CONFIG_LOCKDEP
+CONFIG_PROVE_LOCKING
+CONFIG_LOCKUP_DETECTOR
+
+I will leave you to play with these debug configuration options and explore others. Running git grep -r DEBUG | grep Kconfig can find all supported debug configuration options.
