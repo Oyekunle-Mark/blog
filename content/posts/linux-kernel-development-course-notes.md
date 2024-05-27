@@ -248,5 +248,31 @@ Configure Built-in:
     Recompile your kernel, install, and reboot the system into the newly installed kernel.
     Run dmesg | less and search for "I changed". Do you see the message?
 
+## Practicing commits
 
+Let's practice committing a change. You can see the files you modified by running the git status command. Let's first check if your changes follow the coding guidelines outlined in the Linux kernel coding style guide. You can run checkpatch.pl on the diff or the generated patch to verify if your changes comply with the coding style. It is good practice to check by running checkpatch.pl on the diff before testing and committing the changes. I find it useful to do this step even before I start testing my patch. This helps avoid redoing testing in case code changes are necessary to address the checkpatch errors and warnings.
 
+You can see my patch workflow below.
+
+Make code changes and compile -> run checkpatch.pl on your changes(git diff > temp; scripts/checkpatch.pl temp) -> fix errors and warns
+ 
+
+Patch Workflow
+
+ 
+
+Make sure you address checkpatch errors and/or warnings. Once checkpatch is happy, test your changes and commit your changes.
+
+If you want to commit all modified files, run:
+
+git commit -a
+
+If you have changes that belong in separate patches, run:
+
+git commit <filenames>
+
+When you commit a patch, you will have to describe what the patch does. The commit message has a subject or short log and longer commit message. It is important to learn what should be in the commit log and what doesn’t make sense. Including what code does isn’t very helpful, whereas why the code change is needed is valuable. Please read How to Write a Git Commit Message for tips on writing good commit messages.
+
+Now, run the commit and add a commit message. After committing the change, generate the patch running the following command:
+
+git format-patch -1 <commit ID>
