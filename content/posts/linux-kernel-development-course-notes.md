@@ -544,3 +544,249 @@ CONFIG_PROVE_LOCKING
 CONFIG_LOCKUP_DETECTOR
 
 I will leave you to play with these debug configuration options and explore others. Running git grep -r DEBUG | grep Kconfig can find all supported debug configuration options.
+
+## Debugging
+
+### Kernel panics
+
+Read these:
+https://www.opensourceforu.com/2011/01/understanding-a-kernel-oops/
+https://sanjeev1sharma.wordpress.com/tag/debug-kernel-panics/
+
+## Decode and analyze the panic message
+
+https://lwn.net/Articles/592724/
+
+Panic messages can be decoded using the decode_stacktrace.sh tool.
+
+Usage:
+      scripts/decode_stacktrace.sh -r <release> | <vmlinux> [base path] [modules path]
+
+Save (cut and paste) the panic trace in the dmesg between the two following lines of text into a .txt file.
+
+------------[ cut here ]------------
+---[ end trace …. ]---
+
+Run this tool in your kernel repo. You will have to supply the [base path], which is the root of the git repo where the vmlinux resides if it is different from the location the tool is run from. If the panic is in a dynamically kernel module, you will have to pass in the [modules path] where the modules reside.
+
+scripts/decode_stacktrace.sh ./vmlinux < panic_trace.txt
+
+Reading code:
+
+    It goes without saying that reading code and understanding the call trace leading up to the failure is an essential first step to debugging and finding a suitable fix.
+
+# Event tracing
+
+https://www.kernel.org/doc/html/latest/trace/events.html
+https://www.kernel.org/doc/html/latest/admin-guide/bug-hunting.html
+https://www.kernel.org/doc/html/latest/admin-guide/bug-bisect.html
+https://www.kernel.org/doc/html/latest/admin-guide/dynamic-debug-howto.html
+
+## Use the stable release rc git
+
+Clone the git repository specified in the email. A new directory linux-5.2.y gets created, which contains the kernel sources. Starting out with the distribution configuration file is the safest approach for the very first kernel install on any system. You can do so by copying the configuration for your current kernel from /boot. Once this step is complete, it is time to compile the kernel, install the new kernel and run update-grub to add the new kernel to the grub menu. Now it is time to reboot the system to boot the newly installed kernel.
+
+I am sharing my scripts. Please make sure they work in your environment, and update them as needed to suit your needs.
+
+----------------------------------------------------------------------------------------------------------
+stable_rc_checkout.sh
+     #!/bin/bash
+     ## SPDX-License-Identifier: GPL-2.0
+     # Copyright(c) Shuah Khan <skhan@linuxfoundation.org>
+     #
+     # License: GPLv2
+     # Example usage: stable_rc_checkout.sh <stable-rc e.g 5.2>
+     mkdir -p stable_rc
+     cd stable_rc
+     git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-$1.y
+     cd linux-$1.y
+     #cp /boot/<currentconfig> .config # update script
+     make -j2 all
+     rc=$?; if [[ $rc !=0 ]]; then exit $rc; fi
+     su -c "make modules_install install"
+     echo Ready for reboot test of Linux-$1
+----------------------------------------------------------------------------------------------------------
+
+
+## Download stable release patch and apply the patch
+
+Alternately, you can download and apply the patch. The following is my workflow for getting the repository ready, applying the patch, compiling, and installing. Run the stable_checkout.sh script once to set up your stable repository. After that, run pre_compile_setup.sh to get the patch file and apply whenever a stable release patch is released. I apply patches and use the same repository to be able to detect regressions. I save dmesg for the current rc to compare with the next rc. Please feel free to make changes to suit your needs. Also, make sure to pass in the correct release information from the stable release emails as arguments to this script.
+
+----------------------------------------------------------------------------------------------------------
+stable_checkout.sh
+     #!/bin/bash
+     ## SPDX-License-Identifier: GPL-2.0
+     # Copyright(c) Shuah Khan <skhan@linuxfoundation.org>
+     #
+     # License: GPLv2
+     # Example usage: stable_checkout.sh <stable-release-version e.g 5.2>
+     mkdir -p stable
+     cd stable
+     git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux_$1_stable
+     cd linux_$1_stable
+     git checkout linux-$1.y
+     #cp /boot/ .config # update script​
+----------------------------------------------------------------------
+
+pre_compile_setup.sh
+     #!/bin/bash
+     ## SPDX-License-Identifier: GPL-2.0
+     # Copyright(c) Shuah Khan <skhan@linuxfoundation.org>
+     #
+     # License: GPLv2
+     # Example usage: pre_compile_setup.sh 5.2.11 1 5
+     # Arg 1 is the stable release version which is typically 5.2.x
+     # Arg2 is the 1 for rc1 or 2 for rc2
+     # Arg3 is 4.x or 5.x used to call wget to get the patch file
+     echo Testing patch-$1-rc$2
+     wget https://www.kernel.org/pub/linux/kernel/v$3.x/stable-review/patch-$1-rc$2.gz 
+     git reset --hard
+     make clean
+     git pull
+     gunzip patch-$1-rc$2.gz
+     git apply --index patch-$1-rc$2
+     echo "Patch-$1-rc$2 applied"
+     head Makefile
+     make -j2 all
+     rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+     su -c "make modules_install install"
+     echo Ready for reboot test of Linux-$1-$2
+---------------------------------------------------------------------------------------------------------
+
+## Save logs from the current kernel
+
+Now it is time to reboot the system to boot the newly installed kernel. Before we do that, let's save the logs from the current kernel to compare and look for regressions and new errors, if any.
+
+dmesg -t > dmesg_current
+dmesg -t -k > dmesg_kernel
+dmesg -t -l emerg > dmesg_current_emerg
+dmesg -t -l alert > dmesg_current_alert
+dmesg -t -l crit > dmesg_current_crit
+dmesg -t -l err > dmesg_current_err
+dmesg -t -l warn > dmesg_current_warn
+
+In general, dmesg should be clean with no emerg, alert, crit, and err level messages. If you see any of these, it might indicate some hardware and/or kernel problem.
+
+-----------------------------------------------------------------------------------------------------------------------
+dmesg_checks.sh
+     # !/bin/bash
+     #
+     #SPDX-License-Identifier: GPL-2.0
+     # Copyright(c) Shuah Khan <skhan@linuxfoundation.org>
+     #
+     # License: GPLv2​
+
+          if [ "$1" == "" ]; then
+             echo "$0 " <old name -r>
+             exit -1
+     fi
+
+release=`uname -r`
+echo "Start dmesg regression check for $release" > dmesg_checks_results
+
+echo "--------------------------" >> dmesg_checks_results
+
+dmesg -t -l emerg > $release.dmesg_emerg
+echo "dmesg emergency regressions" >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+diff $1.dmesg_emerg $release.dmesg_emerg >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+
+dmesg -t -l crit > $release.dmesg_crit
+echo "dmesg critical regressions" >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+diff $1.dmesg_crit $release.dmesg_crit >> dmesg_checks_results 
+echo "--------------------------" >> dmesg_checks_results
+
+dmesg -t -l alert > $release.dmesg_alert
+echo "dmesg alert regressions" >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+diff $1.dmesg_alert $release.dmesg_alert >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+
+dmesg -t -l err > $release.dmesg_err
+echo "dmesg err regressions" >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+diff $1.dmesg_err $release.dmesg_err >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+
+dmesg -t -l warn > $release.dmesg_warn
+echo "dmesg warn regressions" >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+diff $1.dmesg_warn $release.dmesg_warn >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+
+dmesg -t > $release.dmesg
+echo "dmesg regressions" >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+diff $1.dmesg $release.dmesg >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+
+dmesg -t > $release.dmesg_kern
+echo "dmesg_kern regressions" >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+diff $1.dmesg_kern $release.dmesg_kern >> dmesg_checks_results
+echo "--------------------------" >> dmesg_checks_results
+
+echo "--------------------------" >> dmesg_checks_results
+
+echo "End dmesg regression check for $release" >> dmesg_checks_results
+----------------------------------------------------------------------------------------------------------
+
+## Restart the system and compare messages
+
+Use the script in the previous section.
+
+If you can't boot the new kernel, perform a selftest:
+
+https://www.kernel.org/doc/html/latest/dev-tools/kselftest.html
+
+## Enhance and improve kernel documentation
+
+Enhancing and improving kernel documentation is a good way to engage the Kernel community and learn different areas of the kernel.
+
+Click to learn about ways to engage the kernel community and learn more about the kernel.
+
+Ways to learn about the kernel
+
+Preparing to build the documentation
+
+There is a script which checks if you have all the needed dependencies to build the documentation. This script is called automatically when you run
+
+make htmldocs
+
+Alternatively, you can call the script directly by running:
+
+./scripts/sphinx-pre-install
+
+
+Building documents and looking for warnings
+
+Once you have all the requirements, you can do the building by running:
+
+make htmldocs > doc_make.log 2>&1
+
+Check for warnings and other errors you might find and see if you can fix them.
+
+ 
+
+🚩
+Please keep in mind it is not trivial and/or easy to fix documentation warnings.
+
+## Contribute to the kernel - Getting started
+
+There are several ways to get started and contribute to the kernel. A few ideas:
+
+    Subscribe to the Linux Kernel mailing list for the area of your interest.
+    Follow the development activity reading the Linux Kernel Mailing List Archives.
+    Join the #kernelnewbies IRC channel on the OFTC IRC network. Several of us developers hang out on that channel. This server is home to #mm, #linux-rt, and several other Linux channels.
+    Join the #linux-kselftest, #linuxtv, #kernelci, or #v4l IRC channels on freenode.
+    - This server recommends Nick registration. Server Name: irc.freenode.net/6667. You can register your Nick in the server tab with the command: identify /msg NickServ identify <password>
+    - You can configure your chat client to auto-identify using the NickServ(/MSG NickServ+password) option - works on hexchat.
+    Find spelling errors in kernel messages.
+    Static code analysis error fixing: Static code analysis is the process of detecting errors and flaws in the source code. The Linux kernel Makefile can be invoked with options to enable to run the Sparse source code checker on all source files, or only on the re-compiled files. Compile the kernel with the source code checker enabled and find errors and fix as needed.
+    Fix the Syzbot null pointer dereference and WARN bug reports which include the reproducer to analyze. Run the reproducer to see if you can reproduce the problem. Look ​​​​​​​at the crash report and walk through sources for a possible cause. You might be able to fix problems.
+    Look for opportunities to add/update .gitignore files for tools and Kselftest. Build tools and Kselftest and run git status. If there are binaries, then it is time to add a new .gitignore file and/or an entry to an existing .gitignore file.
+    Run mainline kernels built with the CONFIG_KASAN, Locking debug options mentioned earlier in the debugging section, and report problems if you see any. This gives you an opportunity to debug and fix problems. The community welcomes fixes and bug reports
+
+
