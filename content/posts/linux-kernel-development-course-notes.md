@@ -318,4 +318,147 @@ git send-email <patch_file>
 
 You won’t be sending this patch and you can revert this commit.
 
+### the review process
+
+Your patch will get comments from reviewers with suggestions for improvements and, in some cases, learning to know more about the change itself. Please be patient and wait for a minimum of one week before requesting a response. During merge windows and other busy times, it might take longer than a week to get a response. Also, make sure you sent the patch to the right recipients.
+
+Please thank the reviewers for their comments and address them. Don’t hesitate to ask a clarifying question if you don’t understand the comment. When you send a new version of your patch, add version history describing the changes made in the new version. The right place for the version history is after the "---" below the Signed-off-by tag and the start of the changed file list, as shown in the screenshot below. Everything between the Signed-off-by and the diff is just for the reviewers, and will not be included in the commit. Please don’t include version history in the commit log.
+
+### best practices for sending patches
+
+A few tips and best practices for sending patches:
+
+    Run scripts/checkpatch.pl before sending the patch. Note that checkpatch.pl might suggest changes that are unnecessary! Use your best judgement when deciding whether it makes sense to make the change checkpatch.pl suggests. The end goal is for the code to be more readable. If checkpatch.pl suggests a change and you think the end result is not more readable, don't make the change. For example, if a line is 81 characters long, but breaking it makes the resulting code look ugly, don't break that line.
+    Compile and test your change.
+    Document your change and include relevant testing details and results of that testing.
+    Signed-off-by should be the last tag.
+    As a general rule, don't include change lines in the commit log.
+    Remember that good patches get accepted quicker. It is important to understand how to create good patches.
+    Copy mailing lists and maintainers/developers suggested by scripts/get_maintainer.pl.
+    Be patient and wait for a minimum of one week before requesting for comments. It could take longer than a week during busy periods such as the merge windows.
+    Always thank the reviewers for their feedback and address them.
+    Don’t hesitate to ask a clarifying question if you don’t understand the comment.
+    When working on a patch based on a suggested idea, make sure to give credit using the Suggested-by tag. Other tags used for giving credit are Tested-by, Reported-by.
+    Remember that the reviewers help improve code. Don’t take it personally and handle the feedback gracefully. Please don’t do top post when responding to emails. Responses should be inlined.
+    Keep in mind that the community doesn’t have any obligation to accept your patch. Patches are pulled, not pushed. Always give a reason for the maintainer to take your patch.
+    Be patient and be ready to make changes and working with the reviewers. It could take multiple versions before your patch gets accepted. It is okay to disagree with maintainers and reviewers. Please don't ignore a review because you disagree with it. Present your reasons for disagreeing, along with supporting technical data such as benchmarks and other improvements.
+    In general, getting response and comments is a good sign that the community likes the patch and wants to see it improved. Silence is what you want to be concerned about. If you don't hear any response back from the maintainer after a week, feel free to either send the patch again, or send a gentle "ping" - something like "Hi, I know you are busy, but have you found time to look at my patch?"
+    Expect to receive comments and feedback at any time during the review process.
+    Stay engaged and be ready to fix problems, if any, after the patch gets accepted into linux-next for integration into the mainline. Kernel build and Continuous Integration (CI) bots and rings usually find problems.
+    When a patch gets accepted, you will either see an email from the maintainer or an automated patch accepted email with information on which tree it has been applied to, and some estimate on when you can expect to see it in the mainline kernel. Not all maintainers might send an email when the patch gets merged. The patch could stay in linux-next for integration until the next merge window, before it gets into Linus's tree. Unless the patch is an actual fix to a bug in Linus's tree, in which case, it may go directly into his tree.
+    Sometimes you need to send multiple related patches. This is useful for grouping, say, to group driver clean up patches for one particular driver into a set, or grouping patches that are part of a new feature into one set. git format-patch -2 -s --cover-letter --thread --subject-prefix="PATCH v3" --to= “name” --cc=” name” will create a threaded patch series that includes the top two commits and generated cover letter template. It is a good practice to send a cover letter when sending a patch series.
+    Including patch series version history in the cover letter will help reviewers get a quick snapshot of changes from version to version.
+    When a maintainer accepts a patch, the maintainer assumes maintenance responsibility for that patch. As a result, maintainers have decision power on how to manage patch flow into their individual sub-system(s) and they also have individual preferences. Be prepared for maintainer-to-maintainer differences in commit log content and sub-system specific coding styles.
+
+##########################################
+# Look at which part of this document can be replaced by the kernel doc
+Like the best practices and coding standard, for eg.
+##########################################
+
+## Kernel and Driver building, loading and dependencies
+
+### compiling a single source
+
+So far, we talked about compiling the entire kernel. Next, let's see how we can build a driver or module or a single source file in the kernel.
+
+Compiling a single source file: make path/file.o:
+
+make drivers/media/test-drivers/vimc/vimc-core.o
+  CALL    scripts/checksyscalls.s
+  CALL    scripts/atomic/check-atomics.sh
+  DESCEND objtool
+  CC [M]  drivers/media/test-drivers/vimc/vimc-core.o
+
+Compiling at the directory level: make path:
+
+make drivers/media/test-drivers/vimc/
+  CALL    scripts/checksyscalls.sh
+  CALL    scripts/atomic/check-atomics.sh  
+  DESCEND objtool
+  CC [M]  drivers/media/test-drivers/vimc/vimc-core.o
+  CC [M]  drivers/media/test-drivers/vimc/vimc-common.o
+  CC [M]  drivers/media/test-drivers/vimc/vimc-streamer.o
+  CC [M]  drivers/media/test-drivers/vimc/vimc-capture.o
+  CC [M]  drivers/media/test-drivers/vimc/vimc-debayer.o
+  CC [M]  drivers/media/test-drivers/vimc/vimc-scaler.o
+  CC [M]  drivers/media/test-drivers/vimc/vimc-sensor.o
+  LD [M]  drivers/media/test-drivers/vimc/vimc.o
+
+The two examples we provided show us how to compile a single source file for the driver vimc, which resides at drivers/media/test-drivers/vimc. You can see how the first make command just compiles the source file and the second one builds the driver. Running make <path> localizes a build to the specified path.
+
+### Compiling a module
+
+Next, let's look at the following variation that builds the vimc module:
+
+make M=drivers/media/test-drivers/vimc
+  CC [M] drivers/media/test-drivers/vimc/vimc-core.o
+  CC [M] drivers/media/test-drivers/vimc/vimc-common.o
+  CC [M] drivers/media/test-drivers/vimc/vimc-streamer.o
+  CC [M] drivers/media/test-drivers/vimc/vimc-capture.o
+  CC [M] drivers/media/test-drivers/vimc/vimc-debayer.o
+  CC [M] drivers/media/test-drivers/vimc/vimc-scaler.o
+  CC [M] drivers/media/test-drivers/vimc/vimc-sensor.o
+  LD [M] drivers/media/test-drivers/vimc/vimc.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC drivers/media/test-drivers/vimc/vimc.mod.o
+  LD [M] drivers/media/test-drivers/vimc/vimc.ko
+
+Sometimes, it is hard to figure out all the dependencies for a module, or a driver, or a configuration option. Until all the dependencies are enabled, the driver you are looking to enable will not be enabled.
+
+Let’s take a look at drivers/media/test-drivers/vimc/Kconfig.
+
+config VIDEO_VIMC
+    tristate "Virtual Media Controller Driver (VIMC)"
+    depends on VIDEO_DEV && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
+    select VIDEOBUF2_VMALLOC
+    select VIDEO_V4L2_TPG
+    help
+     Skeleton driver for Virtual Media Controller
+
+     This driver can be compared to the vivid driver for emulating
+     a media node that exposes a complex media topology. The topology
+     is hard coded for now but is meant to be highly configurable in
+     the future.
+
+     When in doubt, say N.
+
+We can see that vimc can be enabled by changing the CONFIG_VIDEO_VIMC option. It is a tristate driver. What that means is that it can be:
+
+    enabled as a built-in
+    enabled as a module 
+    disabled.
+
+It depends on CONFIG_VIDEO_DEV, CONFIG_VIDEO_V4L2, and CONFIG_VIDEO_V4L2_SUBDEV_API to be enabled. It will also autoselect CONFIG_VIDEOBUF2_VMALLOC and CONFIG_VIDEO_V4L2_TPG.
+
+    Enable as a module: CONFIG_VIDEO_VIMC=m
+    Enable as built-in: CONFIG_VIDEO_VIMC=y
+    Disable: CONFIG_VIDEO_VIMC=n or #CONFIG_VIDEO_VIMC
+
+Some options are boolean. That means these modules or options can be enabled or disabled. It might take a couple of attempts to enable all the dependencies. We recommend using make menuconfig to enable drivers and other configuration options.
+
+ 
+
+Kernel Configuration - make menuconfig
+
+ 
+
+Vimc resides under the Device Drivers option. Using the down arrow, you can navigate to the Device Drivers option and take a look at what there is in there. You can use the "/" option to search. We are showing the long road to give you more details on the configuration hierarchy.
+
+ 
+
+menuconfig Device Drivers
+
+ 
+
+Now navigate down until you see Multimedia support and then follow the Media test drivers option. You will finally see vimc there.
+
+ 
+
+menuconfig_vimc
+
+ 
+
+In our configuration, we have it enabled as a module. If you would like to change it, scroll down and this will highlight the M, at which point you can change it by just pressing Enter, which will toggle through all three options for this driver. That’s enough fun with menuconfig for now. We will leave it to you to play with other options.
+
 
