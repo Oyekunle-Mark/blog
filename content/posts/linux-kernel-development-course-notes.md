@@ -259,8 +259,6 @@ Make code changes and compile -> run checkpatch.pl on your changes(git diff > te
 
 Patch Workflow
 
- 
-
 Make sure you address checkpatch errors and/or warnings. Once checkpatch is happy, test your changes and commit your changes.
 
 If you want to commit all modified files, run:
@@ -276,3 +274,48 @@ When you commit a patch, you will have to describe what the patch does. The comm
 Now, run the commit and add a commit message. After committing the change, generate the patch running the following command:
 
 git format-patch -1 <commit ID>
+
+## Sending a patch for review
+
+So far, you learned how to make a change, check for coding style compliance, and generate a patch. The next step is learning the logistics of how to send a patch to the Linux Kernel mailing lists for review. The get_maintainer.pl script tells you whom to send the patch to. The two example runs of get_maintainer.pl show the list of people to send patches to. You should send the patch to maintainers, commit signers, supporters, and all the mailing lists shown in the get_maintainer.pl’s o​​​​​​​utput. Mailing lists are on the “cc” and the rest are on the “To” list when a patch is sent.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+scripts/get_maintainer.pl drivers/usb/usbip/usbip_common.c
+Valentina Manea <valentina.manea.m@gmail.com> (maintainer:USB OVER IP DRIVER)
+Shuah Khan <shuah@kernel.org> (maintainer:USB OVER IP DRIVER)
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> (supporter:USB SUBSYSTEM)
+linux-usb@vger.kernel.org (open list:USB OVER IP DRIVER)
+-------------------------------------------------------------------------------------------------------------------------------------
+scripts/get_maintainer.pl drivers/media/usb/au0828/au0828-core.c
+Mauro Carvalho Chehab <mchehab@kernel.org> (maintainer:MEDIA INPUT INFRASTRUCTURE (V4L/DVB),commit_signer:7/8=88%,authored:2/8=25%,removed_lines:6/72=8%)
+Hans Verkuil <hverkuil-cisco@xs4all.nl> (commit_signer:5/8=62%)
+Shuah Khan <shuah@kernel.org> (commit_signer:2/8=25%,authored:2/8=25%,added_lines:150/167=90%,removed_lines:46/72=64%)
+Brad Love <brad@nextdimension.cc> (commit_signer:2/8=25%,authored:2/8=25%)
+Richard Fontana <rfontana@redhat.com> (commit_signer:1/8=12%)
+Sean Young <sean@mess.org> (authored:1/8=12%,removed_lines:6/72=8%)
+Thomas Gleixner <tglx@linutronix.de> (authored:1/8=12%,removed_lines:11/72=15%)
+linux-media@vger.kernel.org (open list:MEDIA INPUT INFRASTRUCTURE (V4L/DVB))
+linux-kernel@vger.kernel.org (open list)
+-------------------------------------------------------------------------------------------------------------------------------------
+
+Now let’s run the get_maintainer.pl script on your changes.​
+
+------------------------------------------------------------------------------------------------------------------------------------
+scripts/get_maintainer.pl drivers/media/usb/uvc/uvc_driver.c
+Laurent Pinchart <laurent.pinchart@ideasonboard.com> (maintainer:USB VIDEO CLASS)
+Mauro Carvalho Chehab <mchehab@kernel.org> (maintainer:MEDIA INPUT INFRASTRUCTURE (V4L/DVB))
+linux-media@vger.kernel.org (open list:USB VIDEO CLASS)
+linux-kernel@vger.kernel.org (open list)
+------------------------------------------------------------------------------------------------------------------------------------
+
+At this time, you can run:
+
+git format-patch -1 <commit ID> --to=laurent.pinchart@ideasonboard.com --to=mchehab@kernel.org --cc=linux-media@vger.kernel.org --cc=linux-kernel@vger.kernel.org
+
+This will generate a patch. You can send this patch using:
+
+git send-email <patch_file>
+
+You won’t be sending this patch and you can revert this commit.
+
+
