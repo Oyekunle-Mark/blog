@@ -461,4 +461,15 @@ menuconfig_vimc
 
 In our configuration, we have it enabled as a module. If you would like to change it, scroll down and this will highlight the M, at which point you can change it by just pressing Enter, which will toggle through all three options for this driver. That’s enough fun with menuconfig for now. We will leave it to you to play with other options.
 
+## Uninstalling custom compiled kernel
 
+If you have a custom compiled Linux kernel running, you need to remove the following files/dirs:
+
+    /boot/vmlinuz*KERNEL-VERSION*
+    /boot/initrd*KERNEL-VERSION*
+    /boot/System-map*KERNEL-VERSION*
+    /boot/config-*KERNEL-VERSION*
+    /lib/modules/*KERNEL-VERSION*/
+
+Then:
+    Update grub configuration file with sudo update-grub
