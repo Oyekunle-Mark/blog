@@ -1,5 +1,5 @@
 ---
-title: "A Guide to Installing and Booting the Linux Kernel"
+title: "A Guide to Building, Installing and Booting the Linux Kernel"
 date: 2024-06-02
 description: "Build, install and boot a linux kernel."
 summary: "Notes on building, installing and booting the Linux kernel on real hardware."
