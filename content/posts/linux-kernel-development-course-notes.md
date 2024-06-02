@@ -24,7 +24,7 @@ cd linux_mainline
 
 ## Building and installing the kernel
 
-Starting out with the distribution configuration file is the safest approach for the very first kernel install on any system
+Starting out with the distribution configuration file is the safest approach for the very first kernel install on any system:
 
 ```sh
 cp /boot/config-6.1.0-21-amd64 .config
@@ -36,7 +36,7 @@ cp /boot/config-6.1.0-21-amd64 .config
 make oldconfig
 ```
 
-Another way to trim down the kernel and tailor it to your system is by using `make localmodconfig`. This option creates a configuration file based on the list of modules currently loaded on your system.
+Another way to trim down the kernel and tailor it to your system is by using `make localmodconfig`. You can use `make help` to view all the *make* options available.
 
 ```sh
 lsmod > /tmp/my-lsmod
@@ -59,7 +59,7 @@ The above command will install the new kernel and run update-grub to add the new
 
 ### Booting the kernel
 
-In `/etc/default/grub` GRUB_TIMEOUT value to 60 seconds, so grub pauses in menu long enough to choose a kernel to boot and also enable printing early boot messages to *vga* using the *earlyprintk=vga* kernel boot option by adding `GRUB_CMDLINE_LINUX="earlyprintk=vga"` to the file.
+In `/etc/default/grub`, set the GRUB_TIMEOUT value to 60 seconds, so grub pauses in menu long enough to choose a kernel to boot and also enable printing early boot messages to *vga* using the *earlyprintk=vga* kernel boot option by adding `GRUB_CMDLINE_LINUX="earlyprintk=vga"` to the file.
 
 The content of my `/etc/default/grup` file is shown below:
 
@@ -111,11 +111,11 @@ Run update-grub to update the grub configuration in /boot:
 sudo update-grub
 ```
 
-Restart the system. Once the new kernel comes up, compare the saved dmesg from the old kernel with the new one, and see if there are any regressions.
+Restart the system. Once the new kernel comes up, compare the *dmesg* from the old kernel with the new one(the next section describes how), and see if there are any regressions.
 
 ## Examining kernel logs
 
-You should compare the logs obtained by running the following commands on the current kernel with your new custom kernel to check for regression. There should be no new *crit*, *alert*, and *emerg* level messages in *dmesg*. There should be no new *err* level messages too.
+You should compare the logs obtained by running the following commands on the current kernel with your new custom kernel to check for regressions. There should be no new *crit*, *alert*, and *emerg* level messages in *dmesg*. There should be no new *err* level messages too.
 
 ```sh
 dmesg -t -l emerg
@@ -126,8 +126,6 @@ dmesg -t -l warn
 dmesg -t -k
 dmesg -t
 ```
-
-Are there any stack traces resulting from WARN_ON in the dmesg? These are serious problems that require further investigation.
 
 ## Useful debug options
 
@@ -144,7 +142,7 @@ CONFIG_LOCKUP_DETECTOR
 
 ## Uninstalling custom compiled kernel
 
-If you have a custom compiled Linux kernel running, you need to remove the following files/dirs:
+To remove a custome Linux kernel installed on your machine, you need to remove the following files/dirs:
 
 1. /boot/vmlinuz*KERNEL-VERSION*
 2. /boot/initrd*KERNEL-VERSION*
