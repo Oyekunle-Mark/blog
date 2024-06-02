@@ -14,9 +14,9 @@ sudo apt-get install build-essential vim git cscope libncurses-dev libssl-dev bi
 sudo apt-get install git-email
 ```
 
-## Setup email client
+## Seting up an email client
 
-Article followed - https://www.freedesktop.org/wiki/Software/PulseAudio/HowToUseGitSendEmail/
+Setting up git email.
 
 ### Configure name and email address
 
@@ -37,7 +37,7 @@ git config --global sendemail.smtpuser oyekunlemac@gmail.com
 git config --global sendemail.smtppass <password here>
 ```
 
-Follow this to complete setup: https://stackoverflow.com/questions/68238912/how-to-configure-and-use-git-send-email-to-work-with-gmail-to-email-patches-to
+This [article](https://www.freedesktop.org/wiki/Software/PulseAudio/HowToUseGitSendEmail/) is a good reference.
 
 ## Exploring the linux kernel sources
 
@@ -63,8 +63,6 @@ cp /boot/config-6.1.0-21-amd64 .config
 
 ### Compiling the kernel
 
-Run the following command to generate a kernel configuration file based on the current configuration. This step is important to configure the kernel, which has a good chance to work correctly on your system. You will be prompted to tune the configuration to enable new features and drivers that have been added since Ubuntu snapshot the kernel from the mainline. `make all` will invoke `make oldconfig` in any case. I am showing these two steps separately just to call out the configuration file generation step.
-
 ```sh
 make oldconfig
 ```
@@ -76,19 +74,21 @@ lsmod > /tmp/my-lsmod
 make LSMOD=/tmp/my-lsmod localmodconfig
 ```
 
-Once this step is complete, it is time to compile the kernel. Using the `-j` option helps the compiles go faster. The `-j` option specifies the number of jobs (make commands) to run simultaneously:
-
 ```sh
-make -j3 all
+make -j12 all
 ```
 
 ### Installing the new kernel
 
 Once the kernel compilation is complete, install the new kernel:
 
+```sh
 su -c "make modules_install install"
+```
 
-The above command will install the new kernel and run update-grub to add the new kernel to the grub menu. Now it is time to reboot the system to boot the newly installed kernel. Before we do that, let's save logs from the current kernel to compare and look for regressions and new errors, if any. Using the -t option allows us to generate dmesg logs without the timestamps, and makes it easier to compare the old and the new.
+The above command will install the new kernel and run update-grub to add the new kernel to the grub menu.
+
+Before we reboot into the new kernel, let's save logs from the current kernel to compare and look for regressions and new errors, if any.
 
 dmesg -t > dmesg_current
 dmesg -t -k > dmesg_kernel
@@ -99,416 +99,61 @@ dmesg -t -l err > dmesg_current_err
 dmesg -t -l warn > dmesg_current_warn
 dmesg -t -l info > dmesg_current_info
 
-In general, dmesg should be clean, with no emerg, alert, crit, and err level messages. If you see any of these, it might indicate some hardware and/or kernel problem.
-
-If the dmesg_current is zero length, it is very likely that secure boot is enabled on your system. When secure boot is enabled, you won’t be able to boot the newly installed kernel, as it is unsigned. You can disable secure boot temporarily on startup with MOK manager. Your system should already have mokutil.
-
-Let's first make sure secure boot is indeed enabled:
-
-mokutil --sb-state
-
-If you see the following, you are all set to boot your newly installed kernel:
-
-SecureBoot disabled
-Platform is in Setup Mode
-
-If you see the following, disable secure boot temporarily on startup with MOK manager:
-
-SecureBoot enabled
-SecureBoot validation is disabled in shim
-
-Disable validation:
-
-sudo mokutil --disable-validation
-root password
-mok password: 12345678
-mok password: 12345678
-sudo reboot
-
-The machine will reboot in a blue screen, the MOK manager menu. Type the number(s) shown on the screen: if it is 7, it is the 7th character of the password. So, keep 12345678. The question to answer is Yes to disable secure boot. Reboot.
-
-You’ll see on startup after a new message (top left) saying <<Booting in insecure mode>>. The machine will boot normally after and secure boot remains enabled. This change is permanent, a clean install won't overwrite it. You must keep it that way.
-
-To re-enable it (please note that you won't be able to boot the kernels you build if you re-enable):
-
-sudo mokutil --enable-validation
-root password
-mok password: 12345678
-mok password: 12345678
-sudo reboot
-
-
-### useful link
-https://askubuntu.com/questions/1119734/how-to-replace-or-remove-kernel-with-signed-kernels
-
 ### Booting the kernel
 
-Booting the Kernel
+In `/etc/default/grub` GRUB_TIMEOUT value to 60 seconds, so grub pauses in menu long enough to choose a kernel to boot and also enable printing early boot messages to vga using the earlyprintk=vga kernel boot option by adding `GRUB_CMDLINE_LINUX="earlyprintk=vga"` to the file.
 
-Let’s take care of a couple of important steps before trying out the newly installed kernel. There is no guarantee that the new kernel will boot. As a safeguard, we want to make sure that there is at least one good kernel installed and we can select it from the boot menu. By default, grub tries to boot the default kernel, which is the newly installed kernel. We change the default grub configuration file /etc/default/grub to the boot menu, and pause for us to be able to select the kernel to boot.
+The content of my `/etc/default/grup` file is shown below:
 
- 
+```sh
+# If you change this file, run 'update-grub' afterwards to update
+# /boot/grub/grub.cfg.
+# For full documentation of the options in this file, see:
+#   info -f grub -n 'Simple configuration'
 
-🚩
-Please note that this option is specific to Ubuntu, and other distributions might have a different way to specify boot menu options.
-
- 
-
-Increase the GRUB_TIMEOUT value to 10 seconds, so grub pauses in menu long enough to choose a kernel to boot:
-
-    Uncomment GRUB_TIMEOUT and set it to 10: GRUB_TIMEOUT=10
-    Comment out GRUB_TIMEOUT_STYLE=hidden
-
-If the newly installed kernel fails to boot, it is nice to be able to see the early messages to figure out why the kernel failed to boot.
-
- 
-
-Enable printing early boot messages to vga using the earlyprintk=vga kernel boot option:
-
+GRUB_DEFAULT=0
+GRUB_TIMEOUT=60
+GRUB_TIMEOUT_STYLE=menu
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
 GRUB_CMDLINE_LINUX="earlyprintk=vga"
 
- 
+# If your computer has multiple operating systems installed, then you
+# probably want to run os-prober. However, if your computer is a host
+# for guest OSes installed via LVM or raw disk devices, running
+# os-prober can cause damage to those guest OSes as it mounts
+# filesystems to look for things.
+#GRUB_DISABLE_OS_PROBER=false
 
-Run update-grub to update the grub configuration in /boot
+# Uncomment to enable BadRAM filtering, modify to suit your needs
+# This works with Linux (no patch required) and with any kernel that obtains
+# the memory map information from GRUB (GNU Mach, kernel of FreeBSD ...)
+#GRUB_BADRAM="0x01234567,0xfefefefe,0x89abcdef,0xefefefef"
 
+# Uncomment to disable graphical terminal
+#GRUB_TERMINAL=console
+
+# The resolution used on graphical terminal
+# note that you can use only modes which your graphic card supports via VBE
+# you can see them in real GRUB with the command `vbeinfo'
+#GRUB_GFXMODE=640x480
+
+# Uncomment if you don't want GRUB to pass "root=UUID=xxx" parameter to Linux
+#GRUB_DISABLE_LINUX_UUID=true
+
+# Uncomment to disable generation of recovery mode menu entries
+#GRUB_DISABLE_RECOVERY="true"
+
+# Uncomment to get a beep at grub start
+#GRUB_INIT_TUNE="480 440 1"
+```
+
+Run update-grub to update the grub configuration in /boot:
+
+```sh
 sudo update-grub
+```
 
- 
-
-Now, it’s time to restart the system. Once the new kernel comes up, compare the saved dmesg from the old kernel with the new one, and see if there are any regressions. If the newly installed kernel fails to boot, you will have to boot a good kernel, and then investigate why the new kernel failed to boot.​
-
-These steps are not specific to stable kernels. You can check out linux mainline or linux-next and follow the same recipe of generating a new configuration from an oldconfig, build, and install the mainline or linux-next kernels.
-
-## Making changes to a driver
-
-Now, let’s select a driver to make a change. Run lsmod to see the modules loaded on your system, and pick a driver to change. I will walk you through changing the uvcvideo driver. If you don’t have uvcvideo on your system, find a different driver and follow along using your driver name instead of uvcvideo.
-
-Once you have the name of a driver, it's time to find out where the .c and .h files for that driver are in the Linux kernel repository. Even though searching Makefiles will get you the desired result, git grep will get you there faster, searching only the checked-in files in the repository. git grep will skip all generated files such as .o’s, .ko’s and binaries. It will skip the .git directory as well. Okay, now let’s run git grep to look for uvcvideo files.
-
-git grep uvcvideo -- '*Makefile'
-drivers/media/usb/uvc/Makefile:uvcvideo-objs := uvc_driver.o uvc_queue.o uvc_v4l2.o uvc_video.o uvc_ctrl.o drivers/media/usb/uvc/Makefile:uvcvideo-objs += uvc_entity.o
-drivers/media/usb/uvc/Makefile:obj-$(CONFIG_USB_VIDEO_CLASS) += uvcvideo.o
-
-uvcvideo is a USB Video Class (UVC) media driver for video input devices, such as webcams. It supports webcams on laptops. Let’s check the source files for this driver.
-
-ls drivers/media/usb/uvc/
-Kconfig uvc_debugfs.c uvc_isight.c uvc_status.c uvcvideo.h
-Makefile uvc_driver.c uvc_metadata.c uvc_v4l2.c
-uvc_ctrl.c uvc_entity.c uvc_queue.c uvc_video.c
-
-Let's make a small change to the probe function of the uvcvideo driver. A probe function is called when the driver is loaded. Let's edit uvc_driver.c:
-
-vim drivers/media/usb/uvc/uvc_driver.c
-
-Find the probe function by searching for _probe text by typing / in standard mode. Once you've found the probe function, add pr_info() to it and save the file. A pr_info() function writes a message to the kernel log buffer, and we can see it using dmesg.
-
-static int uvc_probe(struct usb_interface *intf,
-                     const struct usb_device_id *id)
-{
-        struct usb_device *udev = interface_to_usbdev(intf);
-        struct uvc_device *dev;
-        const struct uvc_device_info *info =
-                (const struct uvc_device_info *)id->driver_info;
-        int function;
-        int ret;
-
-        pr_info("I changed uvcvideo driver in the Linux Kernel\n");
-
-        if (id->idVendor && id->idProduct)
-                uvc_trace(UVC_TRACE_PROBE, "Probing known UVC device %s "
-                                "(%04x:%04x)\n", udev->devpath, id->idVendor,
-                                id->idProduct);
-        else
-                uvc_trace(UVC_TRACE_PROBE, "Probing generic UVC device %s\n",
-                                udev->devpath);​
-
-Let’s try configuring uvcvideo as a built-in and as a module to play with installing, loading and unloading modules.
-
-Configure as a module:
-
-    Configure CONFIG_USB_VIDEO_CLASS=y
-    Recompile your kernel and install. Please note that you don't have to reboot your system. You can load your newly installed module.
-
-Load module:
-
-    sudo modprobe uvcvideo
-    Once you load the module, let's check if you see your message.
-    Run dmesg | less and search for "I changed". Do you see the message?
-    Run lsmod | grep uvcvideo. Do you see the module?
-
-Unload module:
-
-    sudo rmmod uvcvideo
-    Check dmesg for any messages about the uvcvideo module removal.
-    Run lsmod | grep uvcvideo. Do you see the module?
-
-Configure Built-in:
-
-    Configure CONFIG_USB_VIDEO_CLASS=y
-    Recompile your kernel, install, and reboot the system into the newly installed kernel.
-    Run dmesg | less and search for "I changed". Do you see the message?
-
-## Practicing commits
-
-Let's practice committing a change. You can see the files you modified by running the git status command. Let's first check if your changes follow the coding guidelines outlined in the Linux kernel coding style guide. You can run checkpatch.pl on the diff or the generated patch to verify if your changes comply with the coding style. It is good practice to check by running checkpatch.pl on the diff before testing and committing the changes. I find it useful to do this step even before I start testing my patch. This helps avoid redoing testing in case code changes are necessary to address the checkpatch errors and warnings.
-
-You can see my patch workflow below.
-
-Make code changes and compile -> run checkpatch.pl on your changes(git diff > temp; scripts/checkpatch.pl temp) -> fix errors and warns
- 
-
-Patch Workflow
-
-Make sure you address checkpatch errors and/or warnings. Once checkpatch is happy, test your changes and commit your changes.
-
-If you want to commit all modified files, run:
-
-git commit -a
-
-If you have changes that belong in separate patches, run:
-
-git commit <filenames>
-
-When you commit a patch, you will have to describe what the patch does. The commit message has a subject or short log and longer commit message. It is important to learn what should be in the commit log and what doesn’t make sense. Including what code does isn’t very helpful, whereas why the code change is needed is valuable. Please read How to Write a Git Commit Message for tips on writing good commit messages.
-
-Now, run the commit and add a commit message. After committing the change, generate the patch running the following command:
-
-git format-patch -1 <commit ID>
-
-## Sending a patch for review
-
-So far, you learned how to make a change, check for coding style compliance, and generate a patch. The next step is learning the logistics of how to send a patch to the Linux Kernel mailing lists for review. The get_maintainer.pl script tells you whom to send the patch to. The two example runs of get_maintainer.pl show the list of people to send patches to. You should send the patch to maintainers, commit signers, supporters, and all the mailing lists shown in the get_maintainer.pl’s o​​​​​​​utput. Mailing lists are on the “cc” and the rest are on the “To” list when a patch is sent.
-
--------------------------------------------------------------------------------------------------------------------------------------
-scripts/get_maintainer.pl drivers/usb/usbip/usbip_common.c
-Valentina Manea <valentina.manea.m@gmail.com> (maintainer:USB OVER IP DRIVER)
-Shuah Khan <shuah@kernel.org> (maintainer:USB OVER IP DRIVER)
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> (supporter:USB SUBSYSTEM)
-linux-usb@vger.kernel.org (open list:USB OVER IP DRIVER)
--------------------------------------------------------------------------------------------------------------------------------------
-scripts/get_maintainer.pl drivers/media/usb/au0828/au0828-core.c
-Mauro Carvalho Chehab <mchehab@kernel.org> (maintainer:MEDIA INPUT INFRASTRUCTURE (V4L/DVB),commit_signer:7/8=88%,authored:2/8=25%,removed_lines:6/72=8%)
-Hans Verkuil <hverkuil-cisco@xs4all.nl> (commit_signer:5/8=62%)
-Shuah Khan <shuah@kernel.org> (commit_signer:2/8=25%,authored:2/8=25%,added_lines:150/167=90%,removed_lines:46/72=64%)
-Brad Love <brad@nextdimension.cc> (commit_signer:2/8=25%,authored:2/8=25%)
-Richard Fontana <rfontana@redhat.com> (commit_signer:1/8=12%)
-Sean Young <sean@mess.org> (authored:1/8=12%,removed_lines:6/72=8%)
-Thomas Gleixner <tglx@linutronix.de> (authored:1/8=12%,removed_lines:11/72=15%)
-linux-media@vger.kernel.org (open list:MEDIA INPUT INFRASTRUCTURE (V4L/DVB))
-linux-kernel@vger.kernel.org (open list)
--------------------------------------------------------------------------------------------------------------------------------------
-
-Now let’s run the get_maintainer.pl script on your changes.​
-
-------------------------------------------------------------------------------------------------------------------------------------
-scripts/get_maintainer.pl drivers/media/usb/uvc/uvc_driver.c
-Laurent Pinchart <laurent.pinchart@ideasonboard.com> (maintainer:USB VIDEO CLASS)
-Mauro Carvalho Chehab <mchehab@kernel.org> (maintainer:MEDIA INPUT INFRASTRUCTURE (V4L/DVB))
-linux-media@vger.kernel.org (open list:USB VIDEO CLASS)
-linux-kernel@vger.kernel.org (open list)
-------------------------------------------------------------------------------------------------------------------------------------
-
-At this time, you can run:
-
-git format-patch -1 <commit ID> --to=laurent.pinchart@ideasonboard.com --to=mchehab@kernel.org --cc=linux-media@vger.kernel.org --cc=linux-kernel@vger.kernel.org
-
-This will generate a patch. You can send this patch using:
-
-git send-email <patch_file>
-
-You won’t be sending this patch and you can revert this commit.
-
-### the review process
-
-Your patch will get comments from reviewers with suggestions for improvements and, in some cases, learning to know more about the change itself. Please be patient and wait for a minimum of one week before requesting a response. During merge windows and other busy times, it might take longer than a week to get a response. Also, make sure you sent the patch to the right recipients.
-
-Please thank the reviewers for their comments and address them. Don’t hesitate to ask a clarifying question if you don’t understand the comment. When you send a new version of your patch, add version history describing the changes made in the new version. The right place for the version history is after the "---" below the Signed-off-by tag and the start of the changed file list, as shown in the screenshot below. Everything between the Signed-off-by and the diff is just for the reviewers, and will not be included in the commit. Please don’t include version history in the commit log.
-
-### best practices for sending patches
-
-A few tips and best practices for sending patches:
-
-    Run scripts/checkpatch.pl before sending the patch. Note that checkpatch.pl might suggest changes that are unnecessary! Use your best judgement when deciding whether it makes sense to make the change checkpatch.pl suggests. The end goal is for the code to be more readable. If checkpatch.pl suggests a change and you think the end result is not more readable, don't make the change. For example, if a line is 81 characters long, but breaking it makes the resulting code look ugly, don't break that line.
-    Compile and test your change.
-    Document your change and include relevant testing details and results of that testing.
-    Signed-off-by should be the last tag.
-    As a general rule, don't include change lines in the commit log.
-    Remember that good patches get accepted quicker. It is important to understand how to create good patches.
-    Copy mailing lists and maintainers/developers suggested by scripts/get_maintainer.pl.
-    Be patient and wait for a minimum of one week before requesting for comments. It could take longer than a week during busy periods such as the merge windows.
-    Always thank the reviewers for their feedback and address them.
-    Don’t hesitate to ask a clarifying question if you don’t understand the comment.
-    When working on a patch based on a suggested idea, make sure to give credit using the Suggested-by tag. Other tags used for giving credit are Tested-by, Reported-by.
-    Remember that the reviewers help improve code. Don’t take it personally and handle the feedback gracefully. Please don’t do top post when responding to emails. Responses should be inlined.
-    Keep in mind that the community doesn’t have any obligation to accept your patch. Patches are pulled, not pushed. Always give a reason for the maintainer to take your patch.
-    Be patient and be ready to make changes and working with the reviewers. It could take multiple versions before your patch gets accepted. It is okay to disagree with maintainers and reviewers. Please don't ignore a review because you disagree with it. Present your reasons for disagreeing, along with supporting technical data such as benchmarks and other improvements.
-    In general, getting response and comments is a good sign that the community likes the patch and wants to see it improved. Silence is what you want to be concerned about. If you don't hear any response back from the maintainer after a week, feel free to either send the patch again, or send a gentle "ping" - something like "Hi, I know you are busy, but have you found time to look at my patch?"
-    Expect to receive comments and feedback at any time during the review process.
-    Stay engaged and be ready to fix problems, if any, after the patch gets accepted into linux-next for integration into the mainline. Kernel build and Continuous Integration (CI) bots and rings usually find problems.
-    When a patch gets accepted, you will either see an email from the maintainer or an automated patch accepted email with information on which tree it has been applied to, and some estimate on when you can expect to see it in the mainline kernel. Not all maintainers might send an email when the patch gets merged. The patch could stay in linux-next for integration until the next merge window, before it gets into Linus's tree. Unless the patch is an actual fix to a bug in Linus's tree, in which case, it may go directly into his tree.
-    Sometimes you need to send multiple related patches. This is useful for grouping, say, to group driver clean up patches for one particular driver into a set, or grouping patches that are part of a new feature into one set. git format-patch -2 -s --cover-letter --thread --subject-prefix="PATCH v3" --to= “name” --cc=” name” will create a threaded patch series that includes the top two commits and generated cover letter template. It is a good practice to send a cover letter when sending a patch series.
-    Including patch series version history in the cover letter will help reviewers get a quick snapshot of changes from version to version.
-    When a maintainer accepts a patch, the maintainer assumes maintenance responsibility for that patch. As a result, maintainers have decision power on how to manage patch flow into their individual sub-system(s) and they also have individual preferences. Be prepared for maintainer-to-maintainer differences in commit log content and sub-system specific coding styles.
-
-##########################################
-# Look at which part of this document can be replaced by the kernel doc
-Like the best practices and coding standard, for eg.
-##########################################
-
-## Kernel and Driver building, loading and dependencies
-
-### compiling a single source
-
-So far, we talked about compiling the entire kernel. Next, let's see how we can build a driver or module or a single source file in the kernel.
-
-Compiling a single source file: make path/file.o:
-
-make drivers/media/test-drivers/vimc/vimc-core.o
-  CALL    scripts/checksyscalls.s
-  CALL    scripts/atomic/check-atomics.sh
-  DESCEND objtool
-  CC [M]  drivers/media/test-drivers/vimc/vimc-core.o
-
-Compiling at the directory level: make path:
-
-make drivers/media/test-drivers/vimc/
-  CALL    scripts/checksyscalls.sh
-  CALL    scripts/atomic/check-atomics.sh  
-  DESCEND objtool
-  CC [M]  drivers/media/test-drivers/vimc/vimc-core.o
-  CC [M]  drivers/media/test-drivers/vimc/vimc-common.o
-  CC [M]  drivers/media/test-drivers/vimc/vimc-streamer.o
-  CC [M]  drivers/media/test-drivers/vimc/vimc-capture.o
-  CC [M]  drivers/media/test-drivers/vimc/vimc-debayer.o
-  CC [M]  drivers/media/test-drivers/vimc/vimc-scaler.o
-  CC [M]  drivers/media/test-drivers/vimc/vimc-sensor.o
-  LD [M]  drivers/media/test-drivers/vimc/vimc.o
-
-The two examples we provided show us how to compile a single source file for the driver vimc, which resides at drivers/media/test-drivers/vimc. You can see how the first make command just compiles the source file and the second one builds the driver. Running make <path> localizes a build to the specified path.
-
-### Compiling a module
-
-Next, let's look at the following variation that builds the vimc module:
-
-make M=drivers/media/test-drivers/vimc
-  CC [M] drivers/media/test-drivers/vimc/vimc-core.o
-  CC [M] drivers/media/test-drivers/vimc/vimc-common.o
-  CC [M] drivers/media/test-drivers/vimc/vimc-streamer.o
-  CC [M] drivers/media/test-drivers/vimc/vimc-capture.o
-  CC [M] drivers/media/test-drivers/vimc/vimc-debayer.o
-  CC [M] drivers/media/test-drivers/vimc/vimc-scaler.o
-  CC [M] drivers/media/test-drivers/vimc/vimc-sensor.o
-  LD [M] drivers/media/test-drivers/vimc/vimc.o
-  Building modules, stage 2.
-  MODPOST 1 modules
-  CC drivers/media/test-drivers/vimc/vimc.mod.o
-  LD [M] drivers/media/test-drivers/vimc/vimc.ko
-
-Sometimes, it is hard to figure out all the dependencies for a module, or a driver, or a configuration option. Until all the dependencies are enabled, the driver you are looking to enable will not be enabled.
-
-Let’s take a look at drivers/media/test-drivers/vimc/Kconfig.
-
-config VIDEO_VIMC
-    tristate "Virtual Media Controller Driver (VIMC)"
-    depends on VIDEO_DEV && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
-    select VIDEOBUF2_VMALLOC
-    select VIDEO_V4L2_TPG
-    help
-     Skeleton driver for Virtual Media Controller
-
-     This driver can be compared to the vivid driver for emulating
-     a media node that exposes a complex media topology. The topology
-     is hard coded for now but is meant to be highly configurable in
-     the future.
-
-     When in doubt, say N.
-
-We can see that vimc can be enabled by changing the CONFIG_VIDEO_VIMC option. It is a tristate driver. What that means is that it can be:
-
-    enabled as a built-in
-    enabled as a module 
-    disabled.
-
-It depends on CONFIG_VIDEO_DEV, CONFIG_VIDEO_V4L2, and CONFIG_VIDEO_V4L2_SUBDEV_API to be enabled. It will also autoselect CONFIG_VIDEOBUF2_VMALLOC and CONFIG_VIDEO_V4L2_TPG.
-
-    Enable as a module: CONFIG_VIDEO_VIMC=m
-    Enable as built-in: CONFIG_VIDEO_VIMC=y
-    Disable: CONFIG_VIDEO_VIMC=n or #CONFIG_VIDEO_VIMC
-
-Some options are boolean. That means these modules or options can be enabled or disabled. It might take a couple of attempts to enable all the dependencies. We recommend using make menuconfig to enable drivers and other configuration options.
-
- 
-
-Kernel Configuration - make menuconfig
-
- 
-
-Vimc resides under the Device Drivers option. Using the down arrow, you can navigate to the Device Drivers option and take a look at what there is in there. You can use the "/" option to search. We are showing the long road to give you more details on the configuration hierarchy.
-
- 
-
-menuconfig Device Drivers
-
- 
-
-Now navigate down until you see Multimedia support and then follow the Media test drivers option. You will finally see vimc there.
-
- 
-
-menuconfig_vimc
-
- 
-
-In our configuration, we have it enabled as a module. If you would like to change it, scroll down and this will highlight the M, at which point you can change it by just pressing Enter, which will toggle through all three options for this driver. That’s enough fun with menuconfig for now. We will leave it to you to play with other options.
-
-## Uninstalling custom compiled kernel
-
-If you have a custom compiled Linux kernel running, you need to remove the following files/dirs:
-
-    /boot/vmlinuz*KERNEL-VERSION*
-    /boot/initrd*KERNEL-VERSION*
-    /boot/System-map*KERNEL-VERSION*
-    /boot/config-*KERNEL-VERSION*
-    /lib/modules/*KERNEL-VERSION*/
-
-Then:
-    Update grub configuration file with sudo update-grub
-
-## Applying patches
-
-As we already talked about, the Linux kernel patch files are text files that contain the differences from the original source to the new source. Each Linux patch is a self-contained change to the code that stands on its own, unless explicitly made part of a patch series. New patches are applied as follows:
-
-patch -p1 < file.patch
-git apply --index file.patch
-
-Either command will work; however, when a patch adds a new file and, if it is applied using the patch command, git does not know about the new files, and they will be treated as untracked files. The git diff command will not show the files in its output and the git status command will show the files as untracked. You can use git diff HEAD to see the changes.
-
-For the most part, there are no issues with building and installing kernels; however, the git reset --hard command will not remove the newly created files and a subsequent git pull will fail.
-
-Click to learn a couple of ways to tell git about the new files and have it track them, thereby avoiding the above issues.
-
-Available Options
-
-Option 1
-
-When a patch that adds new files is applied using the patch command, run git clean to remove untracked files before running git reset --hard. For example, git clean -dfx will force the removal of untracked directories and files, ignoring any standard ignore rules specified in the .gitignore file. You could include the -q option to run git clean in quiet mode, if you do not care to know which files are removed.​
-Option 2
-
-An alternate approach is to tell git to track the newly added files by running git apply --index file.patch. This will result in git applying the patch and adding the result to the index. Once this is done, git diff will show the newly added files in its output and git status will report the status correctly, tagging these files as newly created files.
-
-## Basic testing
-
-Once a new kernel is installed, the next step is to try to boot it and see what happens. Once the new kernel is up and running, check dmesg for any regressions. Run a few usage tests:
-
-    Is networking (wifi or wired) functional?
-    Does ssh work?
-    Run rsync of a large file over ssh
-    Run git clone and git pull
-    Start a web browser
-    Read email
-    Download files: ftp, wget, etc.
-    Play audio/video files
-    Connect new USB devices - mouse, USB stick, etc.
+Restart the system. Once the new kernel comes up, compare the saved dmesg from the old kernel with the new one, and see if there are any regressions.
 
 ## Examining kernel logs
 
@@ -523,14 +168,6 @@ dmesg -t -k
 dmesg -t
 
 Are there any stack traces resulting from WARN_ON in the dmesg? These are serious problems that require further investigation.
-
-## Stress testing
-
-Running three to four kernel compiles in parallel is a good overall stress test. Download a few Linux kernel gits, stable, linux-next etc. Run timed compiles in parallel. Compare times with old runs of this test for regressions in performance. Longer compile times could be indicators of performance regression in one of the kernel modules. 
-
-Performance problems are hard to debug. The first step is to detect them. Running several compiles in parallel is a good overall stress test that could be used as a performance regression test and overall kernel regression test, as it exercises various kernel modules like memory, filesystems, dma, and drivers.
-
-time make all
 
 ## Debug options and proactive testing
 
@@ -582,211 +219,15 @@ https://www.kernel.org/doc/html/latest/admin-guide/bug-hunting.html
 https://www.kernel.org/doc/html/latest/admin-guide/bug-bisect.html
 https://www.kernel.org/doc/html/latest/admin-guide/dynamic-debug-howto.html
 
-## Use the stable release rc git
+## Uninstalling custom compiled kernel
 
-Clone the git repository specified in the email. A new directory linux-5.2.y gets created, which contains the kernel sources. Starting out with the distribution configuration file is the safest approach for the very first kernel install on any system. You can do so by copying the configuration for your current kernel from /boot. Once this step is complete, it is time to compile the kernel, install the new kernel and run update-grub to add the new kernel to the grub menu. Now it is time to reboot the system to boot the newly installed kernel.
+If you have a custom compiled Linux kernel running, you need to remove the following files/dirs:
 
-I am sharing my scripts. Please make sure they work in your environment, and update them as needed to suit your needs.
+    /boot/vmlinuz*KERNEL-VERSION*
+    /boot/initrd*KERNEL-VERSION*
+    /boot/System-map*KERNEL-VERSION*
+    /boot/config-*KERNEL-VERSION*
+    /lib/modules/*KERNEL-VERSION*/
 
-----------------------------------------------------------------------------------------------------------
-stable_rc_checkout.sh
-     #!/bin/bash
-     ## SPDX-License-Identifier: GPL-2.0
-     # Copyright(c) Shuah Khan <skhan@linuxfoundation.org>
-     #
-     # License: GPLv2
-     # Example usage: stable_rc_checkout.sh <stable-rc e.g 5.2>
-     mkdir -p stable_rc
-     cd stable_rc
-     git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-$1.y
-     cd linux-$1.y
-     #cp /boot/<currentconfig> .config # update script
-     make -j2 all
-     rc=$?; if [[ $rc !=0 ]]; then exit $rc; fi
-     su -c "make modules_install install"
-     echo Ready for reboot test of Linux-$1
-----------------------------------------------------------------------------------------------------------
-
-
-## Download stable release patch and apply the patch
-
-Alternately, you can download and apply the patch. The following is my workflow for getting the repository ready, applying the patch, compiling, and installing. Run the stable_checkout.sh script once to set up your stable repository. After that, run pre_compile_setup.sh to get the patch file and apply whenever a stable release patch is released. I apply patches and use the same repository to be able to detect regressions. I save dmesg for the current rc to compare with the next rc. Please feel free to make changes to suit your needs. Also, make sure to pass in the correct release information from the stable release emails as arguments to this script.
-
-----------------------------------------------------------------------------------------------------------
-stable_checkout.sh
-     #!/bin/bash
-     ## SPDX-License-Identifier: GPL-2.0
-     # Copyright(c) Shuah Khan <skhan@linuxfoundation.org>
-     #
-     # License: GPLv2
-     # Example usage: stable_checkout.sh <stable-release-version e.g 5.2>
-     mkdir -p stable
-     cd stable
-     git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux_$1_stable
-     cd linux_$1_stable
-     git checkout linux-$1.y
-     #cp /boot/ .config # update script​
-----------------------------------------------------------------------
-
-pre_compile_setup.sh
-     #!/bin/bash
-     ## SPDX-License-Identifier: GPL-2.0
-     # Copyright(c) Shuah Khan <skhan@linuxfoundation.org>
-     #
-     # License: GPLv2
-     # Example usage: pre_compile_setup.sh 5.2.11 1 5
-     # Arg 1 is the stable release version which is typically 5.2.x
-     # Arg2 is the 1 for rc1 or 2 for rc2
-     # Arg3 is 4.x or 5.x used to call wget to get the patch file
-     echo Testing patch-$1-rc$2
-     wget https://www.kernel.org/pub/linux/kernel/v$3.x/stable-review/patch-$1-rc$2.gz 
-     git reset --hard
-     make clean
-     git pull
-     gunzip patch-$1-rc$2.gz
-     git apply --index patch-$1-rc$2
-     echo "Patch-$1-rc$2 applied"
-     head Makefile
-     make -j2 all
-     rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
-     su -c "make modules_install install"
-     echo Ready for reboot test of Linux-$1-$2
----------------------------------------------------------------------------------------------------------
-
-## Save logs from the current kernel
-
-Now it is time to reboot the system to boot the newly installed kernel. Before we do that, let's save the logs from the current kernel to compare and look for regressions and new errors, if any.
-
-dmesg -t > dmesg_current
-dmesg -t -k > dmesg_kernel
-dmesg -t -l emerg > dmesg_current_emerg
-dmesg -t -l alert > dmesg_current_alert
-dmesg -t -l crit > dmesg_current_crit
-dmesg -t -l err > dmesg_current_err
-dmesg -t -l warn > dmesg_current_warn
-
-In general, dmesg should be clean with no emerg, alert, crit, and err level messages. If you see any of these, it might indicate some hardware and/or kernel problem.
-
------------------------------------------------------------------------------------------------------------------------
-dmesg_checks.sh
-     # !/bin/bash
-     #
-     #SPDX-License-Identifier: GPL-2.0
-     # Copyright(c) Shuah Khan <skhan@linuxfoundation.org>
-     #
-     # License: GPLv2​
-
-          if [ "$1" == "" ]; then
-             echo "$0 " <old name -r>
-             exit -1
-     fi
-
-release=`uname -r`
-echo "Start dmesg regression check for $release" > dmesg_checks_results
-
-echo "--------------------------" >> dmesg_checks_results
-
-dmesg -t -l emerg > $release.dmesg_emerg
-echo "dmesg emergency regressions" >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-diff $1.dmesg_emerg $release.dmesg_emerg >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-
-dmesg -t -l crit > $release.dmesg_crit
-echo "dmesg critical regressions" >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-diff $1.dmesg_crit $release.dmesg_crit >> dmesg_checks_results 
-echo "--------------------------" >> dmesg_checks_results
-
-dmesg -t -l alert > $release.dmesg_alert
-echo "dmesg alert regressions" >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-diff $1.dmesg_alert $release.dmesg_alert >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-
-dmesg -t -l err > $release.dmesg_err
-echo "dmesg err regressions" >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-diff $1.dmesg_err $release.dmesg_err >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-
-dmesg -t -l warn > $release.dmesg_warn
-echo "dmesg warn regressions" >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-diff $1.dmesg_warn $release.dmesg_warn >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-
-dmesg -t > $release.dmesg
-echo "dmesg regressions" >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-diff $1.dmesg $release.dmesg >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-
-dmesg -t > $release.dmesg_kern
-echo "dmesg_kern regressions" >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-diff $1.dmesg_kern $release.dmesg_kern >> dmesg_checks_results
-echo "--------------------------" >> dmesg_checks_results
-
-echo "--------------------------" >> dmesg_checks_results
-
-echo "End dmesg regression check for $release" >> dmesg_checks_results
-----------------------------------------------------------------------------------------------------------
-
-## Restart the system and compare messages
-
-Use the script in the previous section.
-
-If you can't boot the new kernel, perform a selftest:
-
-https://www.kernel.org/doc/html/latest/dev-tools/kselftest.html
-
-## Enhance and improve kernel documentation
-
-Enhancing and improving kernel documentation is a good way to engage the Kernel community and learn different areas of the kernel.
-
-Click to learn about ways to engage the kernel community and learn more about the kernel.
-
-Ways to learn about the kernel
-
-Preparing to build the documentation
-
-There is a script which checks if you have all the needed dependencies to build the documentation. This script is called automatically when you run
-
-make htmldocs
-
-Alternatively, you can call the script directly by running:
-
-./scripts/sphinx-pre-install
-
-
-Building documents and looking for warnings
-
-Once you have all the requirements, you can do the building by running:
-
-make htmldocs > doc_make.log 2>&1
-
-Check for warnings and other errors you might find and see if you can fix them.
-
- 
-
-🚩
-Please keep in mind it is not trivial and/or easy to fix documentation warnings.
-
-## Contribute to the kernel - Getting started
-
-There are several ways to get started and contribute to the kernel. A few ideas:
-
-    Subscribe to the Linux Kernel mailing list for the area of your interest.
-    Follow the development activity reading the Linux Kernel Mailing List Archives.
-    Join the #kernelnewbies IRC channel on the OFTC IRC network. Several of us developers hang out on that channel. This server is home to #mm, #linux-rt, and several other Linux channels.
-    Join the #linux-kselftest, #linuxtv, #kernelci, or #v4l IRC channels on freenode.
-    - This server recommends Nick registration. Server Name: irc.freenode.net/6667. You can register your Nick in the server tab with the command: identify /msg NickServ identify <password>
-    - You can configure your chat client to auto-identify using the NickServ(/MSG NickServ+password) option - works on hexchat.
-    Find spelling errors in kernel messages.
-    Static code analysis error fixing: Static code analysis is the process of detecting errors and flaws in the source code. The Linux kernel Makefile can be invoked with options to enable to run the Sparse source code checker on all source files, or only on the re-compiled files. Compile the kernel with the source code checker enabled and find errors and fix as needed.
-    Fix the Syzbot null pointer dereference and WARN bug reports which include the reproducer to analyze. Run the reproducer to see if you can reproduce the problem. Look ​​​​​​​at the crash report and walk through sources for a possible cause. You might be able to fix problems.
-    Look for opportunities to add/update .gitignore files for tools and Kselftest. Build tools and Kselftest and run git status. If there are binaries, then it is time to add a new .gitignore file and/or an entry to an existing .gitignore file.
-    Run mainline kernels built with the CONFIG_KASAN, Locking debug options mentioned earlier in the debugging section, and report problems if you see any. This gives you an opportunity to debug and fix problems. The community welcomes fixes and bug reports
-
-
+Then:
+    Update grub configuration file with sudo update-grub
