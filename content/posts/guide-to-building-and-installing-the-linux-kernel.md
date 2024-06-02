@@ -1,7 +1,7 @@
 ---
 title: "A Guide to Building, Installing and Booting the Linux Kernel"
 date: 2024-06-02
-description: "Build, install and boot a linux kernel."
+description: "Build, install and boot a Linux kernel."
 summary: "Notes on building, installing and booting the Linux kernel on real hardware."
 tags: ["C", "linux", "osdev"]
 draft: false
@@ -15,7 +15,7 @@ This is intended to be a note on the steps required to build, install, boot, and
 sudo apt-get install build-essential vim git cscope libncurses-dev libssl-dev bison flex
 ```
 
-## Clone the linux kernel source
+## Clone the Linux kernel source
 
 ```sh
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git linux_mainline
@@ -61,7 +61,7 @@ The above command will install the new kernel and run *update-grub* to add the n
 
 In `/etc/default/grub`, set the GRUB_TIMEOUT value to 60 seconds, so grub pauses in the menu long enough to choose a kernel to boot and also enable printing early boot messages to *vga* using the *earlyprintk=vga* kernel boot option by adding `GRUB_CMDLINE_LINUX="earlyprintk=vga"` to the file.
 
-The content of my `/etc/default/grup` file is shared below:
+The content of my `/etc/default/grub` file is shared below:
 
 ```sh
 # If you change this file, run 'update-grub' afterwards to update
@@ -150,7 +150,7 @@ To remove a custom Linux kernel installed on your machine, you need to remove th
 4. /boot/config-*KERNEL-VERSION*
 5. /lib/modules/*KERNEL-VERSION*/
 
-Then, update grub configuration file with:
+Then, update the grub configuration file with:
 
 ```sh
 sudo update-grub
