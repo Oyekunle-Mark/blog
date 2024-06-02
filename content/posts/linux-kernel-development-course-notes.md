@@ -4,7 +4,7 @@ date: 2024-06-02
 description: "Build, install and boot a linux kernel."
 summary: "Notes on building, installing and booting the Linux kernel on real hardware."
 tags: ["C", "linux", "osdev"]
-draft: true
+draft: false
 ---
 
 This is intended to be a note of the steps required to build, install, boot, and troubleshoot a custom Linux kernel on real hardware. I have [another post]({{< ref "/posts/booting-a-custom-linux-kernel.md" >}}) that describes the kernel set-up process using the QEMU emulator.
