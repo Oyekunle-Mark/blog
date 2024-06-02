@@ -55,13 +55,13 @@ Once the kernel compilation is complete, install the new kernel:
 su -c "make modules_install install"
 ```
 
-The above command will install the new kernel and run update-grub to add the new kernel to the grub menu.
+The above command will install the new kernel and run *update-grub* to add the new kernel to the grub menu.
 
 ### Booting the kernel
 
-In `/etc/default/grub`, set the GRUB_TIMEOUT value to 60 seconds, so grub pauses in menu long enough to choose a kernel to boot and also enable printing early boot messages to *vga* using the *earlyprintk=vga* kernel boot option by adding `GRUB_CMDLINE_LINUX="earlyprintk=vga"` to the file.
+In `/etc/default/grub`, set the GRUB_TIMEOUT value to 60 seconds, so grub pauses in the menu long enough to choose a kernel to boot and also enable printing early boot messages to *vga* using the *earlyprintk=vga* kernel boot option by adding `GRUB_CMDLINE_LINUX="earlyprintk=vga"` to the file.
 
-The content of my `/etc/default/grup` file is shown below:
+The content of my `/etc/default/grup` file is shared below:
 
 ```sh
 # If you change this file, run 'update-grub' afterwards to update
@@ -105,7 +105,7 @@ GRUB_CMDLINE_LINUX="earlyprintk=vga"
 #GRUB_INIT_TUNE="480 440 1"
 ```
 
-Run update-grub to update the grub configuration in /boot:
+Run *update-grub* to update the grub configuration in */boot*:
 
 ```sh
 sudo update-grub
@@ -115,7 +115,7 @@ Restart the system. Once the new kernel comes up, compare the *dmesg* from the o
 
 ## Examining kernel logs
 
-You should compare the logs obtained by running the following commands on the current kernel with your new custom kernel to check for regressions. There should be no new *crit*, *alert*, and *emerg* level messages in *dmesg*. There should be no new *err* level messages too.
+You should compare the logs obtained by running the following commands on the current(old) kernel with your new custom kernel to check for regressions. There should be no new *crit*, *alert*, and *emerg* level messages in *dmesg*. There should be no new *err* level messages too.
 
 ```sh
 dmesg -t -l emerg
@@ -142,7 +142,7 @@ CONFIG_LOCKUP_DETECTOR
 
 ## Uninstalling custom compiled kernel
 
-To remove a custome Linux kernel installed on your machine, you need to remove the following files/dirs:
+To remove a custom Linux kernel installed on your machine, you need to remove the following files/dirs:
 
 1. /boot/vmlinuz*KERNEL-VERSION*
 2. /boot/initrd*KERNEL-VERSION*
