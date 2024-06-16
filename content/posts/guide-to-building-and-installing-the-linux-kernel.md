@@ -22,12 +22,26 @@ git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git linux
 cd linux_mainline
 ```
 
+### Choosing a Linux version
+
+You can view the versions available by using the *git tag* command:
+
+```sh
+git tag -l
+```
+
+Choose a Linux version you want to build from the tags and create a branch that is a copy of it. If I wanted to build **v6.8**, I would do:
+
+```sh
+git checkout -b my6.8 v6.8
+```
+
 ## Building and installing the kernel
 
 Starting out with the distribution configuration file is the safest approach for the very first kernel install on any system:
 
 ```sh
-cp /boot/config-6.1.0-21-amd64 .config
+cp /boot/config-`uname -r` .config
 ```
 
 ### Compiling the kernel
@@ -43,13 +57,33 @@ lsmod > /tmp/my-lsmod
 make LSMOD=/tmp/my-lsmod localmodconfig
 ```
 
+### Options for kernel modules development
+
+If you will be writing, and loading kernel modules on the kernel you are going to build, some options should be updated to make you life easier. First, open the `.config` file and ensure `CONFIG_MODVERSIONS` is set to `y`. This allows you to load kernel modules built on one version on another version.
+
+You should also disable module signing so you can freely experiment by loading the modules you develop. Update your `.config` to match the snippet provided below for each option:
+
+```sh
+CONFIG_MODULE_SIG=n
+CONFIG_MODULE_SIG_ALL=n
+# CONFIG_MODULE_SIG_FORCE is not set
+# CONFIG_MODULE_SIG_SHA1 is not set
+# CONFIG_MODULE_SIG_SHA224 is not set
+# CONFIG_MODULE_SIG_SHA256 is not set
+# CONFIG_MODULE_SIG_SHA384 is not set
+```
+
+### Building the kernel
+
+Build your kernel with:
+
 ```sh
 make -j12 all
 ```
 
 ### Installing the new kernel
 
-Once the kernel compilation is complete, install the new kernel:
+Once the kernel build is complete, install the new kernel:
 
 ```sh
 su -c "make modules_install install"
