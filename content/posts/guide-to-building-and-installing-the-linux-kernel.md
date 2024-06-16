@@ -59,7 +59,7 @@ make LSMOD=/tmp/my-lsmod localmodconfig
 
 ### Options for kernel modules development
 
-If you will be building, and loading kernel modules on the kernel you are going to build, some options should be updated to make you life easier. First, open the `.config` file and ensure `CONFIG_MODVERSIONS` is set to `y`. This allows your to load kernel modules build on one version on another version.
+If you will be writing, and loading kernel modules on the kernel you are going to build, some options should be updated to make you life easier. First, open the `.config` file and ensure `CONFIG_MODVERSIONS` is set to `y`. This allows you to load kernel modules built on one version on another version.
 
 You should also disable module signing so you can freely experiment by loading the modules you develop. Update your `.config` to match the snippet provided below for each option:
 
