@@ -73,6 +73,14 @@ CONFIG_MODULE_SIG_ALL=n
 # CONFIG_MODULE_SIG_SHA384 is not set
 ```
 
+The Linux Kernel documentation recommends running:
+
+```sh
+make modules_prepare
+```
+
+as this will make sure the kernel contains the information required to build external modules. The `modules_prepare` target exists solely as a simple way to prepare a kernel source tree for building external modules.
+
 ### Building the kernel
 
 Build your kernel with:
