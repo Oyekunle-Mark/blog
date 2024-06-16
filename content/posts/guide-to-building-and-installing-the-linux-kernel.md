@@ -27,7 +27,7 @@ cd linux_mainline
 Starting out with the distribution configuration file is the safest approach for the very first kernel install on any system:
 
 ```sh
-cp /boot/config-6.1.0-21-amd64 .config
+cp /boot/config-`uname -r` .config
 ```
 
 ### Compiling the kernel
