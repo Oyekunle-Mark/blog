@@ -57,13 +57,33 @@ lsmod > /tmp/my-lsmod
 make LSMOD=/tmp/my-lsmod localmodconfig
 ```
 
+### Options for kernel modules development
+
+If you will be building, and loading kernel modules on the kernel you are going to build, some options should be updated to make you life easier. First, open the `.config` file and ensure `CONFIG_MODVERSIONS` is set to `y`. This allows your to load kernel modules build on one version on another version.
+
+You should also disable module signing so you can freely experiment by loading the modules you develop. Update your `.config` to match the snippet provided below for each option:
+
+```sh
+CONFIG_MODULE_SIG=n
+CONFIG_MODULE_SIG_ALL=n
+# CONFIG_MODULE_SIG_FORCE is not set
+# CONFIG_MODULE_SIG_SHA1 is not set
+# CONFIG_MODULE_SIG_SHA224 is not set
+# CONFIG_MODULE_SIG_SHA256 is not set
+# CONFIG_MODULE_SIG_SHA384 is not set
+```
+
+### Building the kernel
+
+Build your kernel with:
+
 ```sh
 make -j12 all
 ```
 
 ### Installing the new kernel
 
-Once the kernel compilation is complete, install the new kernel:
+Once the kernel build is complete, install the new kernel:
 
 ```sh
 su -c "make modules_install install"
