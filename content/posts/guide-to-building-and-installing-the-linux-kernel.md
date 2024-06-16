@@ -73,6 +73,8 @@ CONFIG_MODULE_SIG_ALL=n
 # CONFIG_MODULE_SIG_SHA384 is not set
 ```
 
+It is also recommended to enable forced module unloading by setting `CONFIG_MODULE_FORCE_UNLOAD` to `y`. When this option is enabled, you can force the kernel to unload a module even when it believes it is unsafe, via a `sudo rmmod -f` module command.
+
 The Linux Kernel documentation recommends running:
 
 ```sh
