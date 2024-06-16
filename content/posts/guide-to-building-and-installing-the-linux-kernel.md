@@ -22,6 +22,20 @@ git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git linux
 cd linux_mainline
 ```
 
+### Choosing a Linux version
+
+You can view the versions available by using the *git tag* command:
+
+```sh
+git tag -l
+```
+
+Choose a Linux version you want to build from the tags and create a branch that is a copy of it. If I wanted to build **v6.8**, I would do:
+
+```sh
+git checkout -b my6.8 v6.8
+```
+
 ## Building and installing the kernel
 
 Starting out with the distribution configuration file is the safest approach for the very first kernel install on any system:
