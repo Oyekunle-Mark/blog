@@ -50,27 +50,24 @@ cp /boot/config-`uname -r` .config
 make oldconfig
 ```
 
-Another way to trim down the kernel and tailor it to your system is by using `make localmodconfig`. You can use `make help` to view all the *make* options available.
+Another way to trim down the kernel and tailor it to your system is by using `localmodconfig` target:
 
 ```sh
 lsmod > /tmp/my-lsmod
 make LSMOD=/tmp/my-lsmod localmodconfig
 ```
 
+You can use `make help` to view all the *make* options available.
+
 ### Options for kernel modules development
 
-If you will be writing, and loading kernel modules on the kernel you are going to build, some options should be updated to make you life easier. First, open the `.config` file and ensure `CONFIG_MODVERSIONS` is set to `y`. This allows you to load kernel modules built on one version on another version.
+If you will be writing, loading and unloading kernel modules on the kernel you are going to build, some options should be updated to make your life easier. First, open the `.config` file and ensure `CONFIG_MODVERSIONS` is set to `y`. This allows you to load kernel modules built on one version on another version.
 
-You should also disable module signing so you can freely experiment by loading the modules you develop. Update your `.config` to match the snippet provided below for each option:
+You should also disable module signing so you can freely experiment by loading the modules you develop:
 
 ```sh
 CONFIG_MODULE_SIG=n
 CONFIG_MODULE_SIG_ALL=n
-# CONFIG_MODULE_SIG_FORCE is not set
-# CONFIG_MODULE_SIG_SHA1 is not set
-# CONFIG_MODULE_SIG_SHA224 is not set
-# CONFIG_MODULE_SIG_SHA256 is not set
-# CONFIG_MODULE_SIG_SHA384 is not set
 ```
 
 It is also recommended to enable forced module unloading by setting `CONFIG_MODULE_FORCE_UNLOAD` to `y`. When this option is enabled, you can force the kernel to unload a module even when it believes it is unsafe, via a `sudo rmmod -f` module command.
@@ -85,7 +82,7 @@ make -j12 all
 
 ### Installing the new kernel
 
-Once the kernel build is complete, install the new kernel:
+Once the kernel build is complete, install the new kernel with:
 
 ```sh
 su -c "make modules_install install"
