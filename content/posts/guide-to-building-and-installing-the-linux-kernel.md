@@ -12,7 +12,7 @@ This is intended to be a note on the steps required to build, install, boot, and
 ## Installing dependencies
 
 ```sh
-sudo apt-get install build-essential vim git cscope libncurses-dev libssl-dev bison flex
+sudo apt-get install build-essential vim git cscope libncurses-dev libssl-dev bison flex libelf-dev
 ```
 
 ## Clone the Linux kernel source
@@ -74,14 +74,6 @@ CONFIG_MODULE_SIG_ALL=n
 ```
 
 It is also recommended to enable forced module unloading by setting `CONFIG_MODULE_FORCE_UNLOAD` to `y`. When this option is enabled, you can force the kernel to unload a module even when it believes it is unsafe, via a `sudo rmmod -f` module command.
-
-The Linux Kernel documentation recommends running:
-
-```sh
-make modules_prepare
-```
-
-as this will make sure the kernel contains the information required to build external modules. The `modules_prepare` target exists solely as a simple way to prepare a kernel source tree for building external modules.
 
 ### Building the kernel
 
