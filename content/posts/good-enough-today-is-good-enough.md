@@ -4,7 +4,7 @@ date: 2024-06-20
 description: "'Good enough' today is better than 'great' tomorrow."
 summary: "The question of when to deliver is constant. Choose to provide a good enough solution as soon as possible. Compared to taking more time to offer a great solution later."
 tags: ["opinion-pieces"]
-draft: true
+draft: false
 ---
 
 The question of when to deliver is constant. Choose to provide a good enough solution as soon as possible. Compared to taking more time to offer a great solution later.
