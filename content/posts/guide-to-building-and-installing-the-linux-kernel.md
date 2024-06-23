@@ -68,6 +68,11 @@ You should also disable module signing so you can freely experiment by loading t
 ```sh
 CONFIG_MODULE_SIG=n
 CONFIG_MODULE_SIG_ALL=n
+# CONFIG_MODULE_SIG_FORCE is not set
+# CONFIG_MODULE_SIG_SHA1 is not set
+# CONFIG_MODULE_SIG_SHA224 is not set
+# CONFIG_MODULE_SIG_SHA256 is not set
+# CONFIG_MODULE_SIG_SHA384 is not set
 ```
 
 It is also recommended to enable forced module unloading by setting `CONFIG_MODULE_FORCE_UNLOAD` to `y`. When this option is enabled, you can force the kernel to unload a module even when it believes it is unsafe, via a `sudo rmmod -f` module command.
@@ -77,7 +82,7 @@ It is also recommended to enable forced module unloading by setting `CONFIG_MODU
 Build your kernel with:
 
 ```sh
-make -j12 all
+make -j12
 ```
 
 ### Installing the new kernel
