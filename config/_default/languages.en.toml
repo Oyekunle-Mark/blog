@@ -9,14 +9,14 @@ title = "Oye Oloyede"
 [params]
   dateFormat = "2 January 2006"
 
-  mainSections = ["posts"]
+  mainSections = ["posts", "projects"]
   # description = "My awesome website"
 
 [params.author]
 name = "Oye Oloyede"
 image = "img/avatar.jpg"
 headline = "Software Engineer, incurable tinkerer"
-bio = ""
+bio = "Incurable tinkerer"
 links = [
   { email = "mailto:oyekunlemac@gmail.com" },
   #   { link = "https://link-to-some-website.com/" },
