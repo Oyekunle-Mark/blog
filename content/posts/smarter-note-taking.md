@@ -4,7 +4,7 @@ date: 2024-07-14
 description: "Smarter note taking with the Zettelkasten method"
 summary: 'This post reviews "How to Take Smart Notes", a book by Sonke Ahrens.'
 tags: ["book-reviews"]
-draft: true
+draft: false
 ---
 
 A Software Engineer is a [knowledge worker](https://en.wikipedia.org/wiki/Knowledge_worker). Software Engineering requires constant learning. I heard about the [Zettelkasten](https://en.wikipedia.org/wiki/Zettelkasten) method and wanted to learn more about the process to incorporate it into my workflow. [How to Take Smart Notes](https://amzn.eu/d/06pomukl) by Sonke Ahrens was recommended as a text for learning the method, so I picked up a copy. This article is my opinion and takeaway from the book.
