@@ -4,7 +4,7 @@ date: 2024-07-20
 description: "My 3D printing progress"
 summary: "I had previously written about getting into 3D printing. In that post, I shared my first prints and what my intentions were for the future. Today, I will be sharing two of my recent prints. The first is a simple laptop holder. The second - my most complex design and print yet - is a desk speaker stand."
 tags: ["3d-printing"]
-draft: true
+draft: false
 ---
 
 I had [previously written]({{< ref "/posts/my-first-foray-into-3d-printing.md" >}}) about getting into 3D printing. In that post, I shared my first prints and what my intentions were for the future. Today, I will be sharing two of my recent prints. The first is a simple laptop holder. The second - my most complex design and print yet - is a desk speaker stand.
