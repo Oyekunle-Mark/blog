@@ -27,9 +27,9 @@ My speakers are placed behind my monitors. I have a three monitor setup, so I di
 This print is the most complex thing I have had to design till date. It presents a number of interesting challenges:
 1. The speaker stands cannot be printed once and would have to be split into many parts.
 2. I had never designed any part that had joints.
-3. Designing such a piece - that does not qualify as simplistic - was challenging for a 3D modelling beginner.
+3. Designing such a piece - that does not qualify as simplistic - was challenging for a 3D modelling beginner. I am a 3D modelling beginer :)
 
-I was able to produce a functional design that used [dovetail joints](https://en.wikipedia.org/wiki/Dovetail_joint) to join the parts. Here is an image of the parts all printed:
+I was able to produce a functional design that used [dovetail joints](https://en.wikipedia.org/wiki/Dovetail_joint) to join the parts. Here is an image of the parts of a single stand:
 
 ![](https://i.imgur.com/YoQvH43.jpeg)
 
@@ -40,12 +40,12 @@ The parts comprise of:
 
 The order of assembly is:
 1. Join a stem to the base.
-2. Optionally, add a number of stems to extend the height of the stand
+2. Optionally, add a number of stems to extend the height of the stand.
 3. Add the top to the last stem.
 
 It is a simple thing to assemble. Assembly does not require a glue.
 
-To improve the traction the base will have on the desk, I added pads to them. Doing this increases the grip the base has on a smooth surface and improved the overall stability of the structure.
+To improve the traction the base will have on the desk, I added pads to them. Doing this increased the grip the base has on a smooth surface and improved the stability of the structure.
 
 ![](https://i.imgur.com/b1BWHrq.jpeg)
 
@@ -54,7 +54,7 @@ I ran out of spools after printing the parts for the first stand, and only the t
 ![](https://i.imgur.com/zYQ68tz.jpeg)
 ![](https://i.imgur.com/YssnruR.jpeg)
 
-The next pictures are the results of having installed this stands into my workspace.
+The next pictures are the results of having installed these stands into my workspace.
 
 
 ![](https://i.imgur.com/JEhfXYJ.jpeg)
