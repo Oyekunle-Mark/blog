@@ -3,8 +3,8 @@ title: "Notes from The Elements of Style"
 date: 2024-07-28
 description: "Notes from The Elements of Style"
 summary: "Notes from The Elements of Style"
-tags: ["3d-printing"]
-draft: false
+tags: ["book-reviews"]
+draft: true
 ---
 
 After [[Reviewing "How to Take Smart Notes" by Sonke Ahrens]], I started with the book [The Elements of Style](https://amzn.eu/d/0ct5zf7z). Starting my Focus on the **Elementary Principles of Composition** section of book.
