@@ -1,8 +1,8 @@
 ---
-title: "Notes from The Elements of Style"
+title: "Notes from the Elements of Style"
 date: 2024-07-28
-description: "Notes from The Elements of Style"
-summary: "Notes from The Elements of Style"
+description: "Notes from the Elements of Style"
+summary: "Notes from the Elements of Style"
 tags: ["book-reviews"]
 draft: true
 ---
