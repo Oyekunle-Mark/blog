@@ -2,7 +2,7 @@
 title: "Notes from the Elements of Style"
 date: 2024-08-07
 description: "Notes from the Elements of Style"
-summary: "Notes from the Elements of Style"
+summary: "I moved on to [the Elements of Style](https://amzn.eu/d/0ct5zf7z) after reading *How to Take Smart Notes*. This post is the notes I put together while reading the Elements of Style."
 tags: ["book-reviews"]
 draft: true
 ---
