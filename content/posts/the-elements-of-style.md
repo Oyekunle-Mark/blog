@@ -4,7 +4,7 @@ date: 2024-08-07
 description: "Notes from the Elements of Style"
 summary: "I moved on to [the Elements of Style](https://amzn.eu/d/0ct5zf7z) after reading *How to Take Smart Notes*. This post is the notes I put together while reading the Elements of Style."
 tags: ["book-reviews"]
-draft: true
+draft: false
 ---
 
 I moved on to [the Elements of Style](https://amzn.eu/d/0ct5zf7z) after reading *How to Take Smart Notes*. You can read my review and notes on *How to Take Smart Notes* [here]({{< ref "smarter-note-taking.md" >}}). This post is the notes I put together while reading the Elements of Style.
