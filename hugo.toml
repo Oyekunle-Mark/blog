@@ -5,3 +5,5 @@ title = 'Oye Oloyede'
 [services]
   [services.googleAnalytics]
     id = 'G-0D0GY7G7HK'
+  [services.disqus]
+    shortname = 'oye-1'
