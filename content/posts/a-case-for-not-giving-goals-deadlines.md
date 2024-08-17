@@ -2,7 +2,7 @@
 title: "A Case for Not Giving Goals Deadlines"
 date: 2024-08-17
 description: "A Case for Not Giving Goals Deadlines"
-summary: ""
+summary: "Deadlines might be hurting your chances of achieving your goals. This post makes a case for not adding deadlines to goals."
 tags: ["opinion-pieces"]
 draft: true
 ---
