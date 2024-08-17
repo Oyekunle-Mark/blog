@@ -7,7 +7,7 @@ tags: ["opinion-pieces"]
 draft: true
 ---
 
-When we set goals, we also add deadlines to them—the date we expect to achieve this goal. We expect deadlines to help us prioritise goals, motivate us to drive them to completion quicker and track our progress along the way.
+When we set goals, we also add deadlines to them — the date we expect to achieve this goal. We expect deadlines to help us prioritise goals, motivate us to drive them to completion quicker and track our progress along the way.
 
 I have found myself repeatedly optimising for meeting deadlines over enjoying the process. I want to meet the goals I set for myself, but I value the learning adventures involved in achieving these goals just as much. This has caused me to extend deadlines repeatedly so I can explore the side quests I discover instead of rushing frantically towards the finish line.
 
@@ -22,4 +22,4 @@ This concept of *quests* resonated with me. It encouraged me to explore a differ
 
 I also predict this new style will add more [*emergency reserves*](https://www.bbc.com/worklife/article/20191015-how-emergency-reserves-can-help-you-stick-to-your-goals) to my goals.
 
-I am approaching these changes as experimental—to be made permanent if they are beneficial compared to my previous habits.
+I am approaching these changes as experimental — to be made permanent if they are beneficial compared to my previous habits.
