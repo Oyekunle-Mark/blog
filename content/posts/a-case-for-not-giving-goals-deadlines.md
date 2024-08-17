@@ -4,7 +4,7 @@ date: 2024-08-17
 description: "A Case for Not Giving Goals Deadlines"
 summary: "Deadlines might be hurting your chances of achieving your goals. This post makes a case for not adding deadlines to goals."
 tags: ["opinion-pieces"]
-draft: true
+draft: false
 ---
 
 When we set goals, we also add deadlines to them — the date we expect to achieve this goal. We expect deadlines to help us prioritise goals, motivate us to drive them to completion quicker and track our progress along the way.
