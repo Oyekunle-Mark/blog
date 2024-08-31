@@ -4,7 +4,7 @@ date: 2024-08-31
 description: "When in Doubt, Wing It!"
 summary: "When in doubt, wing it. There wouldn't always be a guide or manual for the action you wish to perform. You might find there are no guardrails provided. In these moments, wing it!"
 tags: ["opinion-pieces"]
-draft: true
+draft: false
 ---
 
 This post is another monologue note.
