@@ -11,29 +11,29 @@ class PostWriter:
         self.template_handler = TemplateHandler(templates_dir)
 
     def write_post(self, post: Post) -> Path:
-        """
-        Write a single post to the output directory.
-        Returns the path to the written file.
-        """
+        """Write a single post to the output directory"""
         try:
             self.output_dir.mkdir(parents=True, exist_ok=True)
             output_path = self.output_dir / post.html_filename
-
-            # Render the post using the template
             html_content = self.template_handler.render_post(post)
-
-            # Write the rendered HTML to file
             output_path.write_text(html_content)
             return output_path
         except Exception as e:
             raise WriterError(f"Failed to write {post.filename}: {str(e)}")
 
+    def write_index(self, posts: List[Post]) -> Path:
+        """Write the index page"""
+        try:
+            self.output_dir.parent.mkdir(parents=True, exist_ok=True)
+            output_path = self.output_dir.parent / "index.html"
+            html_content = self.template_handler.render_index(posts)
+            output_path.write_text(html_content)
+            return output_path
+        except Exception as e:
+            raise WriterError(f"Failed to write index.html: {str(e)}")
+
     def process_posts(self) -> int:
-        """
-        Convert and write all posts.
-        Returns the number of successfully processed posts.
-        Handles its own error reporting.
-        """
+        """Convert and write all posts"""
         try:
             # Convert all markdown files to Post objects
             posts = self.converter.convert_all()
@@ -45,7 +45,6 @@ class PostWriter:
             for post in posts:
                 try:
                     self.write_post(post)
-                    # Report successful write
                     print(f"\nProcessed: {post.filename}")
                     print(f"  Title: {post.title}")
                     print(f"  Date: {post.date}")
@@ -53,6 +52,14 @@ class PostWriter:
                     successful_count += 1
                 except WriterError as e:
                     failed_writes.append((post, str(e)))
+
+            # Write index page
+            if successful_count > 0:
+                try:
+                    self.write_index(posts)
+                    print("\nGenerated index page")
+                except WriterError as e:
+                    print(f"\nFailed to generate index page: {e}")
 
             if failed_writes:
                 print("\nFailed to write the following posts:")

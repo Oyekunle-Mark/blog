@@ -1,32 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
-    <meta name="date" content="{{ date.isoformat() }}">
-    <meta name="tags" content="{{ tags|join(', ') }}">
-    <!-- Add your CSS here -->
-    <link rel="stylesheet" href="/static/css/style.css">
-    <!-- For code highlighting -->
-    <link rel="stylesheet" href="/static/css/pygments.css">
-</head>
-<body>
-    <article>
-        <header>
-            <h1>{{ title }}</h1>
-            <div class="metadata">
-                <time datetime="{{ date.isoformat() }}">{{ date.strftime('%B %d, %Y') }}</time>
-                <div class="tags">
-                    {% for tag in tags %}
-                        <span class="tag">{{ tag }}</span>
-                    {% endfor %}
-                </div>
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_head %}
+<meta name="date" content="{{ date.isoformat() }}">
+<meta name="tags" content="{{ tags|join(', ') }}">
+{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>{{ title }}</h1>
+        <div class="metadata">
+            <time datetime="{{ date.isoformat() }}">{{ date.strftime('%B %d, %Y') }}</time>
+            <div class="tags">
+                {% for tag in tags %}
+                    <span class="tag">{{ tag }}</span>
+                {% endfor %}
             </div>
-        </header>
-        <div class="content">
-            {{ content|safe }}
         </div>
-    </article>
-</body>
-</html>
+    </header>
+    <div class="content">
+        {{ content|safe }}
+    </div>
+</article>
+{% endblock %}

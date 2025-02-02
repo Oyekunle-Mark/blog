@@ -4,10 +4,10 @@ from .post_writer import PostWriter
 from .css_generator import CssGenerator
 
 def cleanup_generated_files(static_dir: Path) -> None:
-    """Remove all generated HTML files and pygments.css"""
+    """Remove all generated files (HTML files, pygments.css, and index.html)"""
     print("\nCleaning up generated files...")
 
-    # Remove generated HTML files
+    # Remove generated HTML files in posts directory
     posts_dir = static_dir / "posts"
 
     if posts_dir.exists():
@@ -22,6 +22,14 @@ def cleanup_generated_files(static_dir: Path) -> None:
         print(f"Removed directory: {posts_dir}")
     else:
         print(f"No posts directory found at {posts_dir}")
+
+    # Remove index.html
+    index_file = static_dir / "index.html"
+    if index_file.exists():
+        index_file.unlink()
+        print(f"Removed file: {index_file}")
+    else:
+        print("No index.html found")
 
     # Remove generated pygments.css
     pygments_css = static_dir / "css" / "pygments.css"

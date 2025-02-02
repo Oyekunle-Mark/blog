@@ -141,3 +141,64 @@ a:hover {
         font-size: 1rem;
     }
 }
+
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.site-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.site-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.site-title a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.site-nav {
+    margin-top: 1rem;
+}
+
+.site-nav a {
+    margin-right: 1rem;
+}
+
+.posts-list {
+    margin-top: 2rem;
+}
+
+.post-summary {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+}
+
+.post-summary h2 {
+    margin-bottom: 0.5rem;
+}
+
+.post-summary h2 a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.post-summary h2 a:hover {
+    text-decoration: underline;
+}
+
+.site-footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    color: var(--secondary-color);
+    text-align: center;
+}
