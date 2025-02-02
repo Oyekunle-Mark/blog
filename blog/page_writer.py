@@ -1,12 +1,18 @@
 from pathlib import Path
 from .config import Post, Tag, Pages, WriterError
 from .template_handler import TemplateHandler
+from .feed_generator import BlogFeedGenerator
 from .sitemap_generator import SitemapGenerator
 
 class PageWriter:
     def __init__(self, output_dir: str, templates_dir: str, site_url: str):
         self.output_dir = Path(output_dir)
         self.template_handler = TemplateHandler(templates_dir)
+        self.feed_generator = BlogFeedGenerator(  # Using renamed class
+            site_url=site_url,
+            title="Oye Oloyede",
+            description="Learning adventures and thoughts flung into the void of the universe"
+        )
         self.sitemap_generator = SitemapGenerator(site_url)
 
     def write_post(self, post: Post) -> Path:
@@ -56,7 +62,7 @@ class PageWriter:
             raise WriterError(f"Failed to write tag page {tag.name}: {str(e)}")
 
     def write_all(self, pages: Pages) -> int:
-        """Write all pages and generate sitemap"""
+        """Write all pages and generate feeds"""
         successful_count = 0
         failed_writes = []
 
@@ -68,20 +74,24 @@ class PageWriter:
             except WriterError as e:
                 failed_writes.append((post, str(e)))
 
-        # If we have successful posts, write index and tag pages
+        # If we have successful posts, write index, tag pages, feeds, and sitemap
         if successful_count > 0:
             try:
                 self.write_index(pages)
 
-                # Write tag pages
+                # Write tag pages and feeds
                 for tag in pages.tags:
                     self.write_tag(tag)
+                    self.feed_generator.generate_tag_feed(tag, self.output_dir.parent)
+
+                # Generate main feed
+                self.feed_generator.generate_main_feed(pages, self.output_dir.parent)
 
                 # Generate sitemap
                 self.sitemap_generator.generate_sitemap(pages, self.output_dir.parent)
 
             except WriterError as e:
-                print(f"\nFailed to generate index or tag pages: {e}")
+                print(f"\nFailed to generate index, tag pages, feeds, or sitemap: {e}")
 
         # Report any failures
         if failed_writes:

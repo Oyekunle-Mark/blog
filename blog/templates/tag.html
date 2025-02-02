@@ -2,6 +2,10 @@
 
 {% block title %}Posts tagged "{{ tag.name }}"{% endblock %}
 
+{% block extra_feeds %}
+<link rel="alternate" type="application/rss+xml" title="Oye Oloyede - Posts tagged '{{ tag.name }}'" href="/feeds/{{ tag.name }}.xml">
+{% endblock %}
+
 {% block content %}
 <div class="tag-page">
     <h1>Posts tagged "{{ tag.name }}"</h1>

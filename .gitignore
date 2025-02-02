@@ -29,4 +29,5 @@ ENV/
 static/*.html
 static/*.xml
 static/posts/
+static/feeds/
 static/css/pygments.css

@@ -6,7 +6,8 @@
     <title>{% block title %}Oye Oloyede{% endblock %}</title>
     <link rel="stylesheet" href="{{ css_path }}/style.css">
     <link rel="stylesheet" href="{{ css_path }}/pygments.css">
-    {% block extra_head %}{% endblock %}
+    <link rel="alternate" type="application/rss+xml" title="Oye Oloyede" href="/feed.xml">
+    {% block extra_feeds %}{% endblock %}
 </head>
 <body>
     <div class="container">
