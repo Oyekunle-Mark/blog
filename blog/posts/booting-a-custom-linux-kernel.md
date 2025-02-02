@@ -3,7 +3,7 @@ title: "Build and Boot a Custom Linux Kernel"
 date: 2024-05-08
 description: "Setup for kernel hacking."
 summary: "This tutorial shows you how to set up your environment for Linux kernel hacking. We will install the required dependencies, build, and boot into the Linux kernel."
-tags: ["C", "linux", "osdev"]
+tags: ["osdev"]
 draft: false
 ---
 

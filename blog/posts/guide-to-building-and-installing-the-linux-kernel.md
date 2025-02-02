@@ -3,7 +3,7 @@ title: "A Guide to Building, Installing and Booting the Linux Kernel"
 date: 2024-06-02
 description: "Build, install and boot a Linux kernel."
 summary: "Notes on building, installing and booting the Linux kernel on real hardware."
-tags: ["C", "linux", "osdev"]
+tags: ["osdev"]
 draft: false
 ---
 

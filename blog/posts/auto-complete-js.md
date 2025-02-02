@@ -4,7 +4,7 @@ date: 2021-11-15
 description: "Building a Simple Auto-Complete Program in Javascript"
 summary: "In this article, we will be learning enough to understand what autocomplete programs are and how they work. We will also cobble together a rudimentary autocomplete program that can efficiently suggest valid words that match our entries. We will also be learning about the trie data structure and the role it plays in building autocomplete programs."
 draft: false
-tags: ["javascript", "data-structures"]
+tags: ["data-structures", "projects"]
 ---
 
 Autocompletes, or Word completions, are ubiquitous. They help us complete our entries in so many places, that we've now taken them for granted.

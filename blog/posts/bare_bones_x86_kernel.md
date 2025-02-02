@@ -3,7 +3,7 @@ title: "Writing a Bare Bones x86 Kernel"
 date: 2024-04-27
 description: "Writing a Bare Bones x86 Kernel"
 summary: "In this tutorial, we will write a simple kernel for 32-bit x86 and boot it."
-tags: ["osdev", "C"]
+tags: ["osdev"]
 draft: false
 ---
 
