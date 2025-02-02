@@ -1,6 +1,6 @@
 import click
 from pathlib import Path
-from .build import main as build_site
+from .build import main as build_site, cleanup_generated_files
 from .dev_server import DevServer
 
 @click.group()
@@ -18,7 +18,6 @@ def build():
 @click.option('--no-watch', is_flag=True, help='Disable auto-rebuild on changes')
 def serve(port: int, no_watch: bool):
     """Start development server"""
-    # Get project root directory
     project_root = Path(__file__).parent.parent
     static_dir = project_root / "static"
 
@@ -29,3 +28,9 @@ def serve(port: int, no_watch: bool):
     server = DevServer(static_dir, port)
     server.start(watch=not no_watch)
 
+@cli.command()
+def clean():
+    """Clean all generated files"""
+    project_root = Path(__file__).parent.parent
+    static_dir = project_root / "static"
+    cleanup_generated_files(static_dir)
