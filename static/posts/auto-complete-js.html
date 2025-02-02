@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building a Simple Auto-Complete Program in Javascript</title>
+    <meta name="date" content="2021-11-15">
+    <meta name="tags" content="javascript, data-structures">
+    <!-- Add your CSS here -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- For code highlighting -->
+    <link rel="stylesheet" href="/static/css/pygments.css">
+</head>
+<body>
+    <article>
+        <header>
+            <h1>Building a Simple Auto-Complete Program in Javascript</h1>
+            <div class="metadata">
+                <time datetime="2021-11-15">November 15, 2021</time>
+                <div class="tags">
+                    
+                        <span class="tag">javascript</span>
+                    
+                        <span class="tag">data-structures</span>
+                    
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            <p>Autocompletes, or Word completions, are ubiquitous. They help us complete our entries in so many places, that we've now taken them for granted. </p>
+<p>In this article, we will be learning enough to understand what autocomplete programs are and how they work. We will also cobble together a rudimentary autocomplete program that can efficiently suggest valid words that match our entries. We will also be learning about the trie data structure and the role it plays in building autocomplete programs.</p>
+<h2>Prerequisites</h2>
+<p>We will be building the autocomplete program in JavaScript. So some familiarity with that programming language would indeed be helpful. If you're coming from another programming language, you should be able to follow along.</p>
+<p>Also, familiarity with the trie data structure would be helpful. Although this is not a requirement as an implementation is provided in this tutorial.</p>
+<h2>What is an autocomplete?</h2>
+<p>I will defer the exercise of appropriately defining what an autocomplete is to Wikipedia. The <a href="https://en.wikipedia.org/wiki/Autocomplete">wikipedia page for autocomplete</a> has this to say:</p>
+<blockquote>
+<p>Autocomplete, or word completion, is a feature in which an application predicts the rest of a word a user is typing. In Android and iOS smartphones, this is called predictive text. In graphical user interfaces, users can typically press the tab key to accept a suggestion or the down arrow key to accept one of several.</p>
+</blockquote>
+<p>Autocompletes find usage in a lot of software programs such as web browsers, email clients, search engines, code editors, command-line interpreters, and word processors.</p>
+<h2>Implementation of an autocomplete program</h2>
+<p>In this section, and its sub-sections, we will move into the implementation of a usable autocomplete program. Starting out with an inefficient first attempt, we will improve and optimize it to deliver something that at its heart, represents what most practical autocompletes are built on.</p>
+<p>The code presented in this article can be found <a href="https://github.com/Oyekunle-Mark/find_match">here</a> on GitHub</p>
+<h3>A naive implementation</h3>
+<p>Let us begin with a naive implementation. Since the main purpose of the autocomplete is to suggest words that would be ending in the prefix provided by the users as they type their inputs. One way to achieve this is to loop through a list of valid words, find the ones starting with the user's input, and return those as the suggestions.</p>
+<p>With an array of ten valid words:</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">validWords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;flatware&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;clash&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;twin&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;escape&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;describe&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;golf&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;communication&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;coffee&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;split&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;language&quot;</span><span class="p">];</span>
+</code></pre></div>
+
+<p>We can create a function, that loops through all the valid words to find words that have prefixes matching user input. This is demonstrated below:</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">findMatches</span><span class="p">(</span><span class="nx">validWords</span><span class="p">,</span><span class="w"> </span><span class="nx">userInput</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">validWords</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">word</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">word</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="nx">userInput</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Straightforward enough. Is it not?
+We can test this by logging the result of passing the function some user input:</p>
+<p>```javascript=
+console.log(findMatches(validWords, "flat"));
+console.log(findMatches(validWords, "c"));
+console.log(findMatches(validWords, "esp"));
+console.log(findMatches(validWords, "communi"));</p>
+<div class="codehilite"><pre><span></span><code><span class="n">This</span><span class="w"> </span><span class="n">produces</span><span class="p">:</span>
+
+<span class="o">!</span><span class="p">[](</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">i</span><span class="o">.</span><span class="n">imgur</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">sT9Y52q</span><span class="o">.</span><span class="n">png</span><span class="p">)</span>
+
+<span class="n">So</span><span class="w"> </span><span class="n">far</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="n">good</span><span class="p">,</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">say</span><span class="o">.</span><span class="w"> </span><span class="n">But</span><span class="w"> </span><span class="n">taking</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">critical</span><span class="w"> </span><span class="n">look</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">basic</span><span class="w"> </span><span class="n">algorithm</span><span class="w"> </span><span class="n">reveals</span><span class="w"> </span><span class="n">its</span><span class="w"> </span><span class="n">fundamental</span><span class="w"> </span><span class="n">flaw</span><span class="o">.</span><span class="w"> </span><span class="n">What</span><span class="w"> </span><span class="n">happens</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">valid</span><span class="w"> </span><span class="n">words</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">hundreds</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">thousands</span><span class="err">?</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">function</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">perform</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="n">comparison</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">valid</span><span class="w"> </span><span class="n">words</span><span class="o">.</span><span class="w"> </span><span class="n">Which</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">greatly</span><span class="w"> </span><span class="n">degrade</span><span class="w"> </span><span class="n">performance</span><span class="o">.</span>
+
+<span class="n">If</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">don</span><span class="s1">&#39;t find this unacceptable enough, consider that most autocomplete systems will have a growing list of words. That means performance will continue to degrade as words are added until the entire system is brought to its knees.</span>
+
+<span class="n">Surely</span><span class="p">,</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">do</span><span class="w"> </span><span class="n">better</span><span class="o">.</span>
+
+<span class="c1">### A not so naive implementation</span>
+
+<span class="n">The</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="n">bottleneck</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">implementation</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">previous</span><span class="w"> </span><span class="n">section</span><span class="w"> </span><span class="n">was</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">comparison</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">every</span><span class="w"> </span><span class="n">single</span><span class="w"> </span><span class="n">valid</span><span class="w"> </span><span class="n">word</span><span class="o">.</span><span class="w"> </span><span class="n">To</span><span class="w"> </span><span class="n">improve</span><span class="w"> </span><span class="n">performance</span><span class="p">,</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">look</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">way</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">getting</span><span class="w"> </span><span class="n">suggestions</span><span class="w"> </span><span class="n">without</span><span class="w"> </span><span class="n">running</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">valid</span><span class="w"> </span><span class="n">words</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">record</span><span class="o">.</span>
+
+<span class="n">It</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">become</span><span class="w"> </span><span class="n">obvious</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">performing</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">search</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">array</span><span class="w"> </span><span class="n">would</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">cut</span><span class="w"> </span><span class="n">it</span><span class="o">.</span><span class="w"> </span><span class="n">We</span><span class="w"> </span><span class="n">need</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="n">structure</span><span class="w"> </span><span class="n">better</span><span class="w"> </span><span class="n">suited</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">purpose</span><span class="o">.</span><span class="w"> </span><span class="n">One</span><span class="w"> </span><span class="n">such</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="n">structure</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="err">`</span><span class="n">trie</span><span class="err">`</span><span class="o">.</span>
+
+<span class="n">A</span><span class="w"> </span><span class="n">trie</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">tree</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="n">structure</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">based</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">prefix</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">particularly</span><span class="w"> </span><span class="n">efficient</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">retrieving</span><span class="w"> </span><span class="n">data</span><span class="o">.</span><span class="w"> </span><span class="n">If</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">unfamiliar</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">tries</span><span class="p">,</span><span class="w"> </span><span class="n">I</span><span class="w"> </span><span class="n">suggest</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="n">about</span><span class="w"> </span><span class="n">them</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">links</span><span class="w"> </span><span class="n">provided</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">article</span><span class="o">.</span>
+
+<span class="n">We</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">implementing</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">own</span><span class="w"> </span><span class="n">trie</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">using</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">perform</span><span class="w"> </span><span class="n">word</span><span class="w"> </span><span class="n">search</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">get</span><span class="w"> </span><span class="n">suggestions</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">section</span><span class="o">.</span>
+
+
+<span class="c1">#### The Trie</span>
+
+<span class="n">We</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">begin</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">implementation</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="err">`</span><span class="n">TrieNode</span><span class="err">`</span><span class="o">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">represent</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Trie</span><span class="o">.</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">presented</span><span class="w"> </span><span class="n">below</span><span class="p">:</span>
+
+<span class="err">```</span><span class="n">javascript</span>
+<span class="k">class</span><span class="w"> </span><span class="n">TrieNode</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">this</span><span class="o">.</span><span class="n">marksEndOfWord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">false</span><span class="p">;</span>
+<span class="w">        </span><span class="n">this</span><span class="o">.</span><span class="n">children</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">        </span><span class="n">this</span><span class="o">.</span><span class="n">word</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">hasChild</span><span class="p">(</span><span class="n">character</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">character</span><span class="p">]</span><span class="w"> </span><span class="err">?</span><span class="w"> </span><span class="bp">true</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="bp">false</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">getChildTrieNode</span><span class="p">(</span><span class="n">character</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">hasChild</span><span class="p">(</span><span class="n">character</span><span class="p">))</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">character</span><span class="p">];</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">insertChild</span><span class="p">(</span><span class="n">character</span><span class="p">,</span><span class="w"> </span><span class="n">trieNode</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">this</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">character</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trieNode</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">markEndOfWord</span><span class="p">(</span><span class="n">word</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">this</span><span class="o">.</span><span class="n">marksEndOfWord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span><span class="p">;</span>
+<span class="w">        </span><span class="n">this</span><span class="o">.</span><span class="n">word</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">word</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">isEndOfWord</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">marksEndOfWord</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">getWordForTrieNode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">word</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The <code>marksEndOfWord</code> property will be used to indicate if the current TrieNode marks the end of a valid word. In a trie, not only leaf nodes can mark the end of a valid word. Using an example, imagine that the word <code>cat</code> has been inserted into the trie and the nodes link as follows:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">C</span><span class="o">-&gt;</span><span class="n">A</span><span class="o">-&gt;</span><span class="n">T</span>
+</code></pre></div>
+
+<p>Inserting <code>catalogue</code> into the try will update the trie nodes to this:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">C</span><span class="o">-&gt;</span><span class="n">A</span><span class="o">-&gt;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">A</span><span class="o">-&gt;</span><span class="n">L</span><span class="o">-&gt;</span><span class="n">O</span><span class="o">-&gt;</span><span class="n">G</span><span class="o">-&gt;</span><span class="n">U</span><span class="o">-&gt;</span><span class="n">E</span>
+</code></pre></div>
+
+<p>Without a way of marking a trie node as the terminating node for a valid word, it will be very hard for us to decipher valid words that are prefixes of other words in the trie.</p>
+<p>The <code>children</code> property is a javascript object that maps the character represented by the trie node to the trie node itself.</p>
+<p><code>word</code> property is updated if the TrieNode is a terminating node for a valid word. It's more for convenience so we can easily retrieve the valid word from the node. It is only provided for TrieNodes with its <code>marksEndOfWord</code> property set to true to reduce memory usage.</p>
+<p>The rest of the methods on the <code>TrieNode</code> class are straightforward and do not require further explanation.</p>
+<p>With the <code>TrieNode</code> class in place, we will provide the <code>Trie</code> class which will hold the root node and perform insertion and retrieval on the trie nodes.</p>
+<p>The class is presented in-full below:</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nx">Trie</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">TrieNode</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">insertWord</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">word</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nx">currentNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">root</span><span class="p">;</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">currentNode</span><span class="p">.</span><span class="nx">hasChild</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">currentNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">currentNode</span><span class="p">.</span><span class="nx">getChildTrieNode</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kd">const</span><span class="w"> </span><span class="nx">newTrieNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">TrieNode</span><span class="p">();</span>
+<span class="w">                </span><span class="nx">currentNode</span><span class="p">.</span><span class="nx">insertChild</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span><span class="w"> </span><span class="nx">newTrieNode</span><span class="p">);</span>
+<span class="w">                </span><span class="nx">currentNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">newTrieNode</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="nx">currentNode</span><span class="p">.</span><span class="nx">markEndOfWord</span><span class="p">(</span><span class="nx">word</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">findMatches</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">matches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[];</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">word</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nx">matches</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">buildMatches</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">findTailTrieNodeForWord</span><span class="p">(</span><span class="nx">word</span><span class="p">),</span><span class="w"> </span><span class="nx">matches</span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">matches</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">findTailTrieNodeForWord</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nx">currentNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">root</span><span class="p">;</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">currentNode</span><span class="p">.</span><span class="nx">hasChild</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+
+<span class="w">            </span><span class="nx">currentNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">currentNode</span><span class="p">.</span><span class="nx">getChildTrieNode</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">currentNode</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">buildMatches</span><span class="p">(</span><span class="nx">root</span><span class="p">,</span><span class="w"> </span><span class="nx">matches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">root</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">root</span><span class="p">.</span><span class="nx">isEndOfWord</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">matches</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">root</span><span class="p">.</span><span class="nx">getWordForTrieNode</span><span class="p">())</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">nodeProperty</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">root</span><span class="p">.</span><span class="nx">children</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">const</span><span class="w"> </span><span class="nx">childNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">root</span><span class="p">.</span><span class="nx">children</span><span class="p">[</span><span class="nx">nodeProperty</span><span class="p">];</span>
+<span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="nx">buildMatches</span><span class="p">(</span><span class="nx">childNode</span><span class="p">,</span><span class="w"> </span><span class="nx">matches</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The <code>Trie</code> class has one property, <code>root</code>, which acts as a sentinel node.</p>
+<p>The <code>insertWord</code> method takes the word to be inserted into the trie, and starting from the root node, inserts trie nodes for the word, character by character. If the word already has a prefix, it simply just iterates onto the next node. The last <code>TrieNode</code> is marked as a valid word at the end of this method.</p>
+<p>The operation of <code>findMatches</code> is a little more involved. Most of the operation is deffered to the <code>buildMatches</code> method. Before passing execution into the <code>buildMatches</code> method, the <code>findTailTrieNodeForWord</code> method is used to find the 
+TrieNode that represents the last character in the word. The <code>buildMatches</code> method uses this node, retrieved by <code>findTailTrieNodeForWord</code>, as its starting point and fans out to find all valid words that could be found with <code>word</code> as its prefix.</p>
+<h2>Getting autocomplete suggestions using the Trie class</h2>
+<p>With the <code>Trie</code> class implemented in the previous section, we will use that class for our autocomplete program. Working with the same test valid words, we will get suggestions for the same user inputs we validated with our naive implementation.</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">trie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Trie</span><span class="p">();</span>
+
+<span class="nx">validWords</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">word</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">trie</span><span class="p">.</span><span class="nx">insertWord</span><span class="p">(</span><span class="nx">word</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">trie</span><span class="p">.</span><span class="nx">findMatches</span><span class="p">(</span><span class="s2">&quot;flat&quot;</span><span class="p">));</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">trie</span><span class="p">.</span><span class="nx">findMatches</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">));</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">trie</span><span class="p">.</span><span class="nx">findMatches</span><span class="p">(</span><span class="s2">&quot;esp&quot;</span><span class="p">));</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">trie</span><span class="p">.</span><span class="nx">findMatches</span><span class="p">(</span><span class="s2">&quot;communi&quot;</span><span class="p">));</span>
+</code></pre></div>
+
+<p>This produces the same result as before:</p>
+<p><img alt="" src="https://i.imgur.com/3bvuEm6.png" /></p>
+<h2>Improvement achieved by using a trie</h2>
+<p>By using a trie, as a base data structure for finding and retrieving the autocomplete suggestions, we are no longer limited by the bottleneck of the size of the keywords. The trie navigates to only nodes that match the characters in the user input and cuts out visiting other nodes.</p>
+<p>This will greatly improve the speed of searching and retrieval.</p>
+<h2>Further improvements that can be made to the trie</h2>
+<p>In this section, I will highlight the problems with the autocomplete algorithm we've implemented so far. I leave the improvements to the reader.</p>
+<p>Even though the trie does not have the bottleneck of iterating through every valid word to find suggestions, building the trie would still require that all valid words be inserted into the trie. Our simple program holds the trie and all its nodes in memory. This would not be very practical for a huge word size as memory is limited on a single machine.</p>
+<p>One other improvement that can be made is to limit the number of suggestions returned by the <code>findMatches</code> method. The method keeps recursing downwards to find matches. The size of the suggestion might be too big. The computer might run out of call stack too. Perhaps refactor to an iterative implementation and limit suggestions returned to a reasonable size
+An adventurous engineer might even come up with an algorithm for prioritizing which, among all the suggestions, should be returned and ranked by order.</p>
+<h2>Conclusion</h2>
+<p>In this tutorial, we have implemented a very crude autocomplete program. We started out with a naive implementation, identified its bottleneck, and provided another implementation of the autocomplete program using a trie.</p>
+<p>A detailed implementation of the trie data structure was also provided and explained with the hope that this would serve to improve your knowledge on the importance and usage of the trie data structure.</p>
+<p>Thank you for sticking with me all the way to the end.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p><a href="https://en.wikipedia.org/wiki/Tmux">Tmux</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </div>
+    </article>
+</body>
+</html>

@@ -3,6 +3,7 @@ title: "The Crusher Programming Language"
 date: 2022-09-17
 description: "Crusher is a lightweight, interpreted procedural programming language."
 summary: "Crusher is a lightweight, interpreted procedural programming language."
+tags: ["projects"]
 ---
 
 ## What is Crusher?

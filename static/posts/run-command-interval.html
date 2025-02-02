@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run a Command at Interval, Unintrusively</title>
+    <meta name="date" content="2024-02-20">
+    <meta name="tags" content="terminal">
+    <!-- Add your CSS here -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- For code highlighting -->
+    <link rel="stylesheet" href="/static/css/pygments.css">
+</head>
+<body>
+    <article>
+        <header>
+            <h1>Run a Command at Interval, Unintrusively</h1>
+            <div class="metadata">
+                <time datetime="2024-02-20">February 20, 2024</time>
+                <div class="tags">
+                    
+                        <span class="tag">terminal</span>
+                    
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            <p>A not so uncommon usecase is needing to run a command repeatedly at fixed intervals, without losing control of your shell.
+Doing this in the Linux shell is particularly trivial.</p>
+<p>I have two quick options for going about this operation:
+1. Use job control to run the command in the background
+2. Use tmux to view the stdout(and/or stderr) of the command by attaching to the session and detaching when you don't have a need to view the logs.</p>
+<p>In these, two cases, I prefer the added option of writing to a log file. This allows me examine what the process has been up to.</p>
+<p>Let us pretend we wish to run the <code>date</code> command every <strong>10s</strong></p>
+<h2>Job Control</h2>
+<p>We will pipe stdout and stderr to <code>/dev/null</code> so they don't get mixed up messages from foreground processes.</p>
+<div class="codehilite"><pre><span></span><code>watch<span class="w"> </span>-n<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="s1">&#39;date | tee -a output.txt&#39;</span><span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="w"> </span><span class="p">&amp;</span>
+</code></pre></div>
+
+<p>This runs the date command every ten seconds in the background while appending the output to <code>output.txt</code> and swallowing writes to stdout and stderr.</p>
+<h2>tmux</h2>
+<p>If you prefer to view the output of the command interactively, you can use tmux<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<p>This is my preferred option, as I can attach to the session whenever I want see how things are moving on and detach when done.
+If you aren't familiar with tmux, theres at least a billion useful articles online about what it is and how to use it.</p>
+<p>The command in this case will not redirect stdout and stderr to <code>/dev/null</code>.</p>
+<div class="codehilite"><pre><span></span><code>watch<span class="w"> </span>-n<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="s1">&#39;date&#39;</span>
+</code></pre></div>
+
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p><a href="https://en.wikipedia.org/wiki/Tmux">Tmux</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </div>
+    </article>
+</body>
+</html>

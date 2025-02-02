@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annotations and Type Checking in Python</title>
+    <meta name="date" content="2021-10-20">
+    <meta name="tags" content="python">
+    <!-- Add your CSS here -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- For code highlighting -->
+    <link rel="stylesheet" href="/static/css/pygments.css">
+</head>
+<body>
+    <article>
+        <header>
+            <h1>Annotations and Type Checking in Python</h1>
+            <div class="metadata">
+                <time datetime="2021-10-20">October 20, 2021</time>
+                <div class="tags">
+                    
+                        <span class="tag">python</span>
+                    
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            <p>Python is a dynamically typed programming language. This means that type checking is done at run-time. <a href="https://www.python.org/dev/peps/pep-0484/">PEP 484</a> introduced type hints, which makes it possible to add type hints to variables and function signatures.</p>
+<p>In this article, we will be looking at how to add annotations and type checking to our Python code.</p>
+<h2>Adding annotations to a Python function</h2>
+<p>Let us begin by considering the change required to annotate a basic Python function.</p>
+<p>Imagine a function <code>say_hello</code> that takes and returns a string. Without hints, this function would look like this:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">say_hello</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello &quot;</span> <span class="o">+</span> <span class="n">name</span>
+</code></pre></div>
+
+<p>It can be annotated as follows:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">say_hello</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello &quot;</span> <span class="o">+</span> <span class="n">name</span>
+</code></pre></div>
+
+<h3>Type aliases</h3>
+<p>In this section, I will show you how to use the <code>typings</code> module to create type aliases.</p>
+<p>A type alias is a name that refers to a previously defined type.</p>
+<p>To define a function <code>itemize_names</code> that takes a list of names of length <code>n</code> and returns a new list with names numbered from 1 to <code>n</code>. An implementation of the function can be found below:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">itemize_names</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pos</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">)]</span>
+</code></pre></div>
+
+<p>To annotate the function, an alias can be created for names:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+
+<span class="n">NameList</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">itemize_names</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">NameList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NameList</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pos</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">)]</span>
+</code></pre></div>
+
+<p>The typing module provides support for so much more, such as:</p>
+<ul>
+<li>Creating a new type</li>
+<li>Annotating a function that takes a callback</li>
+<li>Generics</li>
+</ul>
+<p>You can find the <a href="https://docs.python.org/3/library/typing.html">documentation here</a> to learn how to add type hints to your Python code.</p>
+<h2>Type checking</h2>
+<p>While you can add type annotations to your code, the Python runtime does not enforce type annotations. In this section of the article, I will outline how to enforce type checking on your annotated Python code.</p>
+<p>To demonstrate, the <code>say_hello</code> function defined earlier can be re-written, incorrectly, like this without producing any change in functionality.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">say_hello</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello &quot;</span> <span class="o">+</span> <span class="n">name</span>
+</code></pre></div>
+
+<p>You will also not get a warning from Python.</p>
+<p>To enforce type checks, there are a number of static type checkers available. I would be using <a href="http://mypy-lang.org/">mypy</a>.</p>
+<p>Let's install <code>mypy</code> to get those type checks we need. You can install <code>mypy</code> with this command:</p>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>mypy
+</code></pre></div>
+
+<p>To type check our <code>say_hello</code> function, let's say it is contained in a <code>say_hello.py</code> file:</p>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>mypy<span class="w"> </span>say_hello.py<span class="w"> </span>
+
+say_hello.py:2:<span class="w"> </span>error:<span class="w"> </span>Incompatible<span class="w"> </span><span class="k">return</span><span class="w"> </span>value<span class="w"> </span><span class="nb">type</span><span class="w"> </span><span class="o">(</span>got<span class="w"> </span><span class="s2">&quot;str&quot;</span>,<span class="w"> </span>expected<span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="o">)</span>
+Found<span class="w"> </span><span class="m">1</span><span class="w"> </span>error<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>file<span class="w"> </span><span class="o">(</span>checked<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>file<span class="o">)</span>
+</code></pre></div>
+
+<p>Let's fix the error by changing the expected return type back to <code>str</code> and type check our file again:</p>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>mypy<span class="w"> </span>say_hello.py
+
+Success:<span class="w"> </span>no<span class="w"> </span>issues<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>file
+</code></pre></div>
+
+<p>The <a href="https://mypy.readthedocs.io/en/stable/introduction.html">mypy documentation</a> provides all the information required on how to use <code>mypy</code> in your projects.</p>
+<h2>Conclusion</h2>
+<p>Python is a dynamically typed programming language and does not enforce type checking out of the box. In this article, I have written about how to annotate Python code and enforce type checking at runtime.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p><a href="https://en.wikipedia.org/wiki/The_Hobbit">The Hobbit</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://www.prusa3d.com/category/3d-printers/">Prusa Printers</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p><a href="https://www.printables.com/">Printables</a>&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </div>
+    </article>
+</body>
+</html>

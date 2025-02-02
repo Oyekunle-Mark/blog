@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Insert Into Select Statement - An Overview</title>
+    <meta name="date" content="2021-09-26">
+    <meta name="tags" content="sql, databases">
+    <!-- Add your CSS here -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- For code highlighting -->
+    <link rel="stylesheet" href="/static/css/pygments.css">
+</head>
+<body>
+    <article>
+        <header>
+            <h1>SQL Insert Into Select Statement - An Overview</h1>
+            <div class="metadata">
+                <time datetime="2021-09-26">September 26, 2021</time>
+                <div class="tags">
+                    
+                        <span class="tag">sql</span>
+                    
+                        <span class="tag">databases</span>
+                    
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            <p>Copying a large number of records from one table, or by joining more than one table, into another table is a frequently performed action in database systems. This straightforward operation can be performed in a number of ways. Many of the popular ORMs also have ways to chunk these records when the size becomes large.</p>
+<p>In this article, I will introduce you to the <code>INSERT INTO SELECT</code> statement that is supported by every major SQL engine. This statement allows you to copy a large amount of data from one or more tables into another table efficiently.</p>
+<p>After this tutorial, you will be able to use the statement to write large records from one table, either using simple statements or using complex join statements, to another.</p>
+<h2>Prerequisite</h2>
+<p>To make the most of this article, you're expected to have a basic understanding of SQL. The code samples in this article will be written in the MySQL flavor of SQL. Doing the same in other database engines should require very few modifications.</p>
+<h2>Why copy data between tables?</h2>
+<p>The need to copy data from one table to another can arise for a number of reasons. The most important reason I've had to use this statement was to populate a table that was meant to hold the result of joining multiple tables. This new table can be used for simple reporting purposes.</p>
+<p>Reading data from this new table is a lot faster than performing the multi-table join every time the report records are needed.</p>
+<p>Another scenario where this statement would come in handy is when you need to build a table off of another one with some columns modified along the way. This statement shines when the table you're copying from has a lot of historic data and has hundreds of thousands of rows.</p>
+<h2>Insert into select in action</h2>
+<p>In this section, I will show you how to use the <code>INSERT INTO SELECT</code> statement. We will be creating some tables, writing into them, and using our shiny new SQL statement to copy data from some tables into another.</p>
+<p>The examples presented in this section are contrived so emphasis can be on learning the concept itself rather than picking through complex SQL queries.</p>
+<p>Let us begin by creating three tables. The <code>students</code>, <code>courses</code>, and <code>student_courses</code> tables. The SQL queries to do this is presented below:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">students</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">student_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">first_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">last_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">gender</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">date_of_birth</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">student_id</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">courses</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">course_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">course_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">course_code</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">course_id</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">student_courses</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">student_course_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">student_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">course_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">student_course_id</span><span class="p">),</span>
+<span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">student_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">students</span><span class="p">(</span><span class="n">student_id</span><span class="p">),</span>
+<span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">course_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">courses</span><span class="p">(</span><span class="n">course_id</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div>
+
+<p>Let us perform some insertions into these tables:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">students</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">gender</span><span class="p">,</span><span class="w"> </span><span class="n">date_of_birth</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span>
+<span class="p">(</span><span class="ss">&quot;Wale&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;Uche&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;Male&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;2010-10-21&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;Ngozi&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;Jumoke&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;Female&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;1990-02-01&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;Sango&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;Oya&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;Male&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;2002-05-30&quot;</span><span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">courses</span><span class="p">(</span><span class="n">course_name</span><span class="p">,</span><span class="w"> </span><span class="n">course_code</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span>
+<span class="p">(</span><span class="ss">&quot;Introduction to Programming&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;ICT101&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;C Programming for Noobs&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;CPN210&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;Numerical Analysis&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;MTH354&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;Database Design for Dummies&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;DDD322&quot;</span><span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">student_courses</span><span class="p">(</span><span class="n">student_id</span><span class="p">,</span><span class="w"> </span><span class="n">course_id</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span>
+<span class="p">(</span><span class="ss">&quot;1&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;2&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;1&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;3&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;2&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;1&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;2&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;4&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;3&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;1&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;3&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;2&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;3&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;3&quot;</span><span class="p">),</span>
+<span class="p">(</span><span class="ss">&quot;3&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;4&quot;</span><span class="p">);</span>
+</code></pre></div>
+
+<p>To demonstrate how to use the <code>INSERT INTO SELECT</code>, we will create a <code>female_students</code> table so we can write the result of selecting female students from the <code>students</code> table into this new table.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">female_students</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">female_students_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">first_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">last_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">gender</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">date_of_birth</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">female_students_id</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">female_students</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">students</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">gender</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;Female&quot;</span><span class="p">;</span>
+</code></pre></div>
+
+<p>Performing a select query on the <code>female_students</code> table produces this result:</p>
+<p><img alt="" src="https://i.imgur.com/l7i8QfD.png" /></p>
+<p>To select specific columns. We will truncate the table and use this query:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">TRUNCATE</span><span class="w"> </span><span class="n">female_students</span><span class="p">;</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">female_students</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">gender</span><span class="p">)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">gender</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">students</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">gender</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;Female&quot;</span><span class="p">;</span>
+</code></pre></div>
+
+<p>This produces this result</p>
+<p><img alt="" src="https://i.imgur.com/2R3ZHoK.png" /></p>
+<h2>Writing the result of multi-table joins into another table with insert into select</h2>
+<p>In this section, we will build on what we have learned in the previous section and use <code>INSERT INTO SELECT</code> with join statements.</p>
+<p>Often, you will have the need to write the result of multi-table joins into another table. The query might need to be run by a cron job at specific intervals (say, end-of-day) to batch the result of the expensive multi-table joins into another table for easier reads.</p>
+<p>The query to do this is similar to the ones presented earlier. Let us create a new <code>detailed_student_courses</code> table.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">detailed_student_courses</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">student_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">student_first_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">student_last_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">course_id</span><span class="w">  </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">course_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">course_code</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+<span class="p">);</span>
+</code></pre></div>
+
+<p>We will write into this table via a 3-table join statement as follows:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">detailed_student_courses</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">student_id</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">first_name</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">student_first_name</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">last_name</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">student_last_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">course_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">course_code</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">students</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">s</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">student_courses</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">sc</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">student_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="n">student_id</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">courses</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span>
+<span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">course_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span>
+</code></pre></div>
+
+<p>A select query on <code>detailed_student_courses</code> will present us with this result:</p>
+<p><img alt="" src="https://i.imgur.com/TYpIg8f.png" /></p>
+<h2>Conclusion</h2>
+<p>Copying data between tables will continue to be a frequent operation performed by Developers. The <code>INSERT INTO SELECT</code> statement allows you to copy data from one table to another. This article has covered how to do use this statement in simple and not so simple queries.</p>
+        </div>
+    </article>
+</body>
+</html>

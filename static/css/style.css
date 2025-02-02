@@ -1,0 +1,143 @@
+/* Reset and base styles */
+:root {
+    --primary-color: #333;
+    --secondary-color: #666;
+    --background-color: #fff;
+    --accent-color: #0066cc;
+    --max-width: 768px;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    color: var(--primary-color);
+    background-color: var(--background-color);
+    padding: 2rem 1rem;
+}
+
+/* Article layout */
+article {
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+/* Header styles */
+header {
+    margin-bottom: 2rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+/* Metadata styles */
+.metadata {
+    color: var(--secondary-color);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+}
+
+time {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    background-color: #f0f0f0;
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+}
+
+/* Content styles */
+.content {
+    font-size: 1.1rem;
+}
+
+.content h2 {
+    font-size: 1.8rem;
+    margin: 2rem 0 1rem;
+}
+
+.content h3 {
+    font-size: 1.4rem;
+    margin: 1.5rem 0 1rem;
+}
+
+.content p {
+    margin-bottom: 1.2rem;
+}
+
+.content ul, .content ol {
+    margin-bottom: 1.2rem;
+    padding-left: 1.5rem;
+}
+
+.content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Code blocks */
+.content pre {
+    background-color: #f8f8f8;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.content code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    padding: 0.2em 0.4em;
+    background-color: #f8f8f8;
+    border-radius: 3px;
+}
+
+.content pre code {
+    padding: 0;
+    background-color: transparent;
+}
+
+/* Links */
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    body {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .content {
+        font-size: 1rem;
+    }
+}

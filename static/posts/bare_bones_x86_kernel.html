@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writing a Bare Bones x86 Kernel</title>
+    <meta name="date" content="2024-04-27">
+    <meta name="tags" content="osdev, C">
+    <!-- Add your CSS here -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- For code highlighting -->
+    <link rel="stylesheet" href="/static/css/pygments.css">
+</head>
+<body>
+    <article>
+        <header>
+            <h1>Writing a Bare Bones x86 Kernel</h1>
+            <div class="metadata">
+                <time datetime="2024-04-27">April 27, 2024</time>
+                <div class="tags">
+                    
+                        <span class="tag">osdev</span>
+                    
+                        <span class="tag">C</span>
+                    
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            <p>My interest was piqued by operating systems recently and I have been spending more and more time learning how they work and how they are built. After working my way through most of the xv6 labs<sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, I decided to invest time reading and trying out the tutorials on <a href="https://wiki.osdev.org/Main_Page">osdev wiki</a> because I wanted to find my way without the guard rails provided by the xv6 course. This article is the result of my trying out the <a href="https://wiki.osdev.org/Bare_Bones">Bare Bones tutorial</a> on the wiki.</p>
+<h2>Building your Cross-Compiler</h2>
+<p>You can not use the C compiler on your host operating system to compile the code here. It will be built for your host and not for our target architecture. You will have to build a GCC cross-compiler for the <strong>i686-elf</strong> target. <a href="https://wiki.osdev.org/GCC_Cross-Compiler">This tutorial</a> will help you do that if you don't have one installed on your machine already.</p>
+<h2>The Code</h2>
+<p>For the minimal kernel we will be writing, we will end up with these files at the end of this article:</p>
+<div class="codehilite"><pre><span></span><code>.
+├──<span class="w"> </span>boot.s
+├──<span class="w"> </span>kernel.c
+└──<span class="w"> </span>linker.ld
+</code></pre></div>
+
+<p><strong>boot.s</strong>: x86 assembly to start the kernel and set up the stack.\
+<strong>kernel.c</strong>: Main kernel code in C that uses VGA text mode<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup> to write to the screen.\
+<strong>linker.ld</strong>: Linker script for setting up the final ELF<sup id="fnref2:3"><a class="footnote-ref" href="#fn:3">3</a></sup> file and placing the Multiboot<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> header in the final kernel image.</p>
+<p>All the code that will be shared will be heavily commented on to make them self-explanatory. Additional explanations will be provided under each code block to provide links to specifications that explain key concepts.</p>
+<h3>boot.s</h3>
+<div class="codehilite"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm">An OS image must contain an additional header called Multiboot header, besides the headers of the format used by the OS image.</span>
+<span class="cm">The Multiboot header must be contained completely within the first 8192 bytes of the OS image, and must be longword (32-bit) aligned.</span>
+<span class="cm">In general, it should come as early as possible, and may be embedded in the beginning of the text segment after the real executable header.</span>
+<span class="cm">*/</span>
+<span class="na">.set</span><span class="w"> </span><span class="no">MULTIBOOT_MAGIC</span><span class="p">,</span><span class="w">       </span><span class="mi">0x1BADB002</span><span class="w"> </span><span class="c1">// The field ‘magic’ is the magic number identifying the header, which must be the hexadecimal value 0x1BADB002.</span>
+<span class="na">.set</span><span class="w"> </span><span class="no">MULTIBOOT_ALIGN</span><span class="p">,</span><span class="w">       </span><span class="mi">1</span><span class="w"> </span><span class="err">&lt;&lt;</span><span class="w"> </span><span class="mi">0</span>
+<span class="na">.set</span><span class="w"> </span><span class="no">MULTIBOOT_MEMINFO</span><span class="p">,</span><span class="w">     </span><span class="mi">1</span><span class="w"> </span><span class="err">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span>
+<span class="na">.set</span><span class="w"> </span><span class="no">MULTIBOOT_FLAGS</span><span class="p">,</span><span class="w">       </span><span class="no">MULTIBOOT_ALIGN</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="no">MULTIBOOT_MEMINFO</span><span class="w"> </span><span class="c1">// The field ‘flags’ specifies features that the OS image requests or requires of an boot loader</span>
+<span class="na">.set</span><span class="w"> </span><span class="no">MULTIBOOT_CHECKSUM</span><span class="p">,</span><span class="w">    </span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="p">-(</span><span class="no">MULTIBOOT_MAGIC</span><span class="w"> </span><span class="err">+</span><span class="w"> </span><span class="no">MULTIBOOT_FLAGS</span><span class="p">))</span><span class="w"> </span><span class="c1">// The field ‘checksum’ is a 32-bit unsigned value which, when added to the other magic fields (i.e. ‘magic’ and ‘flags’), must have a 32-bit unsigned sum of zero.</span>
+
+<span class="c1">// section for the magic fields of Multiboot header</span>
+<span class="na">.section</span><span class="w"> </span><span class="no">.multiboot</span>
+<span class="na">.align</span><span class="w"> </span><span class="mi">4</span>
+<span class="na">.long</span><span class="w"> </span><span class="no">MULTIBOOT_MAGIC</span>
+<span class="na">.long</span><span class="w"> </span><span class="no">MULTIBOOT_FLAGS</span>
+<span class="na">.long</span><span class="w"> </span><span class="no">MULTIBOOT_CHECKSUM</span>
+
+<span class="na">.section</span><span class="w"> </span><span class="no">.bss</span>
+<span class="na">.align</span><span class="w"> </span><span class="mi">16</span><span class="w"> </span><span class="c1">// x86 required a 16-bytes aligned stack</span>
+<span class="nl">stack_bottom:</span>
+<span class="w">    </span><span class="na">.skip</span><span class="w"> </span><span class="mi">4096</span><span class="w"> </span><span class="c1">// reserve 4kb for the stack</span>
+<span class="nl">stack_top:</span>
+
+<span class="na">.section</span><span class="w"> </span><span class="no">.text</span>
+<span class="na">.global</span><span class="w"> </span><span class="no">start</span>
+<span class="c1">// starting point of our kernel</span>
+<span class="nl">start:</span>
+<span class="w">    </span><span class="cm">/*</span>
+<span class="cm">    We must first setup the stack. To do that, we set a value for *%esp* register, the stack pointer</span>
+<span class="cm">    On x86, the stack grows downward.</span>
+<span class="cm">    */</span>
+<span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">$stack_top</span><span class="p">,</span><span class="w"> </span><span class="nv">%esp</span>
+
+<span class="w">    </span><span class="c1">// call the *kernel_main* function we will write later in *kernel.c*.</span>
+<span class="w">    </span><span class="nf">call</span><span class="w"> </span><span class="no">kernel_main</span>
+
+<span class="c1">// we shouldn&#39;t return from *kernel_main*, if we do, we will hang up the CPU</span>
+<span class="nl">loop:</span>
+<span class="w">    </span><span class="nf">cli</span><span class="w"> </span><span class="c1">// disables CPU interrupts</span>
+<span class="w">    </span><span class="nf">hlt</span><span class="w"> </span><span class="c1">// halt</span>
+<span class="w">    </span><span class="nf">jmp</span><span class="w"> </span><span class="no">loop</span><span class="w"> </span><span class="c1">// if we do end up here, loop back</span>
+</code></pre></div>
+
+<p>The <a href="https://www.gnu.org/software/grub/manual/multiboot/multiboot.html">Multiboot Specification</a> describes the multiboot headers and how to place them. I recommend you read that document.</p>
+<h3>kernel.c</h3>
+<div class="codehilite"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stddef.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdint.h&gt;</span>
+
+<span class="cm">/* Check if the compiler thinks you are targeting the wrong operating system. */</span>
+<span class="cp">#if defined(__linux__)</span>
+<span class="w">    </span><span class="cp">#error &quot;This program is not being compiled with a cross-compiler&quot;</span>
+<span class="cp">#endif</span>
+
+<span class="cm">/* This tutorial will only work for the 32-bit ix86 targets. */</span>
+<span class="cp">#if !defined(__i386__)</span>
+<span class="w">    </span><span class="cp">#error &quot;This program is meant to target ix86&quot;</span>
+<span class="cp">#endif</span>
+
+<span class="c1">// VGA text mode console is 80 columns by 25 rows</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">VGA_ROWS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">25</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">VGA_COLS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
+
+<span class="c1">// The VGA text buffer is located at physical memory address 0xB8000</span>
+<span class="kt">uint16_t</span><span class="o">*</span><span class="w"> </span><span class="n">vga_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint16_t</span><span class="o">*</span><span class="p">)</span><span class="mh">0xB8000</span><span class="p">;</span>
+
+<span class="kt">size_t</span><span class="w"> </span><span class="n">row_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="kt">size_t</span><span class="w"> </span><span class="n">col_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="c1">// uint8_t VGA_COLOR_BLACK = 0;</span>
+<span class="c1">// uint8_t VGA_COLOR_WHITE = 15;</span>
+<span class="c1">// we are shifting the backgroud color left by 4 and bit ORing with the foregroud color</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">terminal_color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">15</span><span class="p">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * terminal_initialize clears the entire screen</span>
+<span class="cm"> * by writing blank, the space character</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">terminal_initialize</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">VGA_COLS</span><span class="p">;</span><span class="w"> </span><span class="n">col</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">VGA_ROWS</span><span class="p">;</span><span class="w"> </span><span class="n">row</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">VGA_COLS</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">row</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">col</span><span class="p">;</span>
+<span class="w">            </span><span class="c1">// shift terminal color to it&#39;s place and set the character code point to blank</span>
+<span class="w">            </span><span class="n">vga_buffer</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="kt">uint16_t</span><span class="p">)</span><span class="n">terminal_color</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="sc">&#39; &#39;</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * terminal_write_char writes a single character to the terminal.</span>
+<span class="cm"> * Accounts for newlines</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">terminal_write_char</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">switch</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">col_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">            </span><span class="n">row_index</span><span class="o">++</span><span class="p">;</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">default</span><span class="o">:</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">VGA_COLS</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">row_index</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">col_index</span><span class="p">;</span>
+<span class="w">            </span><span class="n">vga_buffer</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="kt">uint16_t</span><span class="p">)</span><span class="n">terminal_color</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+<span class="w">            </span><span class="n">col_index</span><span class="o">++</span><span class="p">;</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">col_index</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VGA_COLS</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">col_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="n">row_index</span><span class="o">++</span><span class="p">;</span><span class="w"> </span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">row_index</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VGA_ROWS</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">row_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="n">col_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * terminal_write_string writes each character in the</span>
+<span class="cm"> * string to the terminal.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">terminal_write_string</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">str</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">str</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">&#39;\0&#39;</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="n">terminal_write_char</span><span class="p">(</span><span class="n">str</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">kernel_main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">terminal_initialize</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">terminal_write_string</span><span class="p">(</span><span class="s">&quot;Hello, world!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">terminal_write_string</span><span class="p">(</span><span class="s">&quot;This is my first kernel. :)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>We don't have access to the C standard library since we will compile our code in <em>freestanding</em>. We have access to a few headers for fixed-width integers, which allows us to use the two includes above. 
+The <a href="https://en.wikipedia.org/wiki/VGA_text_mode">VGA text mode Wikipedia page</a> is a recommended read.</p>
+<h3>linker.ld</h3>
+<div class="codehilite"><pre><span></span><code><span class="o">/*</span><span class="w"> </span><span class="n">Our</span><span class="w"> </span><span class="n">designated</span><span class="w"> </span><span class="n">starting</span><span class="w"> </span><span class="n">point</span><span class="o">.</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">symbol</span><span class="w"> </span><span class="n">created</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="o">*</span><span class="n">boot</span><span class="o">.</span><span class="n">s</span><span class="o">*.</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">bootloader</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">begin</span><span class="w"> </span><span class="n">execution</span><span class="w"> </span><span class="n">here</span><span class="o">*/</span>
+<span class="n">ENTRY</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+
+<span class="n">SECTIONS</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="o">/*</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="n">placing</span><span class="w"> </span><span class="n">sections</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">MB</span><span class="w"> </span><span class="o">*/</span>
+<span class="w">    </span><span class="o">.</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="n">M</span><span class="p">;</span>
+
+<span class="w">    </span><span class="o">/*</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">sections</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="n">kb</span><span class="w"> </span><span class="n">aligned</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">accomodate</span><span class="w"> </span><span class="n">paging</span><span class="w"> </span><span class="n">later</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="o">*/</span>
+<span class="w">    </span><span class="o">/*</span><span class="w"> </span><span class="n">place</span><span class="w"> </span><span class="n">multiboot</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="n">followed</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="n">only</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">*/</span>
+<span class="w">    </span><span class="o">.</span><span class="n">rodata</span><span class="w"> </span><span class="n">BLOCK</span><span class="p">(</span><span class="mi">4</span><span class="n">K</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ALIGN</span><span class="p">(</span><span class="mi">4</span><span class="n">K</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="o">*</span><span class="p">(</span><span class="o">.</span><span class="n">multiboot</span><span class="p">)</span>
+<span class="w">        </span><span class="o">*</span><span class="p">(</span><span class="o">.</span><span class="n">rodata</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="o">/*</span><span class="w"> </span><span class="n">executable</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="o">*/</span>
+<span class="w">    </span><span class="o">.</span><span class="n">text</span><span class="w"> </span><span class="n">BLOCK</span><span class="p">(</span><span class="mi">4</span><span class="n">K</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ALIGN</span><span class="p">(</span><span class="mi">4</span><span class="n">K</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="o">*</span><span class="p">(</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="o">/*</span><span class="w"> </span><span class="n">initialized</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">*/</span>
+<span class="w">    </span><span class="o">.</span><span class="n">data</span><span class="w"> </span><span class="n">BLOCK</span><span class="p">(</span><span class="mi">4</span><span class="n">K</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ALIGN</span><span class="p">(</span><span class="mi">4</span><span class="n">K</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="o">*</span><span class="p">(</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="o">/*</span><span class="w"> </span><span class="n">uninitialzed</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">stack</span><span class="w"> </span><span class="o">*/</span>
+<span class="w">    </span><span class="o">.</span><span class="n">bss</span><span class="w"> </span><span class="n">BLOCK</span><span class="p">(</span><span class="mi">4</span><span class="n">K</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ALIGN</span><span class="p">(</span><span class="mi">4</span><span class="n">K</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="o">*</span><span class="p">(</span><span class="n">COMMON</span><span class="p">)</span>
+<span class="w">        </span><span class="o">*</span><span class="p">(</span><span class="o">.</span><span class="n">bss</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The linker script allows us to explicitly define how the final kernel executable should be built. We can specify alignment, address offset and sections of the output file. The <a href="https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_chapter/ld_3.html">GNU Linker</a> documentation on the ld command language is a recommended read for understanding link scripts.</p>
+<h2>Compiling and Linking</h2>
+<p>How you invoke your cross-compiler may differ based on how you installed it. So, update the commands in this section to use the appropriate cross-compiler invocation.</p>
+<p>We start by assembling the <em>boot.s</em> file with:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">$HOME</span>/opt/cross/bin/i686-elf-as<span class="w"> </span>boot.s<span class="w"> </span>-o<span class="w"> </span>boot.o
+</code></pre></div>
+
+<p>Next, compile the <em>kernel.c</em> file using:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">$HOME</span>/opt/cross/bin/i686-elf-gcc<span class="w"> </span>-std<span class="o">=</span>gnu99<span class="w"> </span>-ffreestanding<span class="w"> </span>-O2<span class="w"> </span>-Wall<span class="w"> </span>-Wextra<span class="w"> </span>-c<span class="w"> </span>kernel.c<span class="w"> </span>-o<span class="w"> </span>kernel.o
+</code></pre></div>
+
+<p>Now, we will link the executables into a final kernel image using the linker script with:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">$HOME</span>/opt/cross/bin/i686-elf-gcc<span class="w"> </span>-ffreestanding<span class="w"> </span>-nostdlib<span class="w"> </span>-T<span class="w"> </span>linker.ld<span class="w"> </span>boot.o<span class="w"> </span>kernel.o<span class="w"> </span>-o<span class="w"> </span>my_kernel.elf<span class="w"> </span>-lgcc
+</code></pre></div>
+
+<p><em>my_kernel.elf</em> is our final kernel image.</p>
+<h3>Verifying Multiboot</h3>
+<p>If you have GRUB<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup> installed, you can check whether your <em>my_kernel.elf</em> has a valid Multiboot header with:</p>
+<div class="codehilite"><pre><span></span><code>grub2-file<span class="w"> </span>--is-x86-multiboot<span class="w"> </span>my_kernel.elf
+</code></pre></div>
+
+<p>That command returns a <em>0</em> exit code on success and <em>1</em> on failure. You can view the exit code of the last shell command using:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span>
+</code></pre></div>
+
+<h2>Running the Kernel</h2>
+<p>We will be using QEMU<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup> for this. The <em>-kernel</em> option to QEMU allows us to specify an ELF executable(like our <em>my_kernel.elf</em> file) that is multiboot compliant and will boot from it. So, boot your new-fangled kernel with:</p>
+<div class="codehilite"><pre><span></span><code>qemu-system-i386<span class="w"> </span>-kernel<span class="w"> </span>my_kernel.elf
+</code></pre></div>
+
+<p>You should see something like this:</p>
+<p><img alt="screenshot of the kernel printing the welcome message" src="https://i.imgur.com/elD5Iz5.png" /></p>
+<p>Congratulations!!!</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p><a href="https://pdos.csail.mit.edu/6.828/2023/xv6.html">The xv6 OS</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://en.wikipedia.org/wiki/VGA_text_mode">VGA Text Mode</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p><a href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">Executable and Linkable Format</a>&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p><a href="https://www.gnu.org/software/grub/manual/multiboot/multiboot.html">Multiboot Specification</a>&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:5">
+<p><a href="https://www.gnu.org/software/grub/">GRUB</a>&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:6">
+<p><a href="https://www.qemu.org/">QEMU</a>&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </div>
+    </article>
+</body>
+</html>

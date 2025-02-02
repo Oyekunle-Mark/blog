@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Guide to Building, Installing and Booting the Linux Kernel</title>
+    <meta name="date" content="2024-06-02">
+    <meta name="tags" content="C, linux, osdev">
+    <!-- Add your CSS here -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- For code highlighting -->
+    <link rel="stylesheet" href="/static/css/pygments.css">
+</head>
+<body>
+    <article>
+        <header>
+            <h1>A Guide to Building, Installing and Booting the Linux Kernel</h1>
+            <div class="metadata">
+                <time datetime="2024-06-02">June 02, 2024</time>
+                <div class="tags">
+                    
+                        <span class="tag">C</span>
+                    
+                        <span class="tag">linux</span>
+                    
+                        <span class="tag">osdev</span>
+                    
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            <p>This is intended to be a note on the steps required to build, install, boot, and troubleshoot a custom Linux kernel on real hardware. I have <a href="{{&lt; ref &quot;/posts/booting-a-custom-linux-kernel.md&quot; &gt;}}">another post</a> that describes the kernel set-up process using the QEMU emulator.</p>
+<h2>Installing dependencies</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>vim<span class="w"> </span>git<span class="w"> </span>cscope<span class="w"> </span>libncurses-dev<span class="w"> </span>libssl-dev<span class="w"> </span>bison<span class="w"> </span>flex<span class="w"> </span>libelf-dev
+</code></pre></div>
+
+<h2>Clone the Linux kernel source</h2>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git<span class="w"> </span>linux_mainline
+<span class="nb">cd</span><span class="w"> </span>linux_mainline
+</code></pre></div>
+
+<h3>Choosing a Linux version</h3>
+<p>You can view the versions available by using the <em>git tag</em> command:</p>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>tag<span class="w"> </span>-l
+</code></pre></div>
+
+<p>Choose a Linux version you want to build from the tags and create a branch that is a copy of it. If I wanted to build <strong>v6.8</strong>, I would do:</p>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>my6.8<span class="w"> </span>v6.8
+</code></pre></div>
+
+<h2>Building and installing the kernel</h2>
+<p>Starting out with the distribution configuration file is the safest approach for the very first kernel install on any system:</p>
+<div class="codehilite"><pre><span></span><code>cp<span class="w"> </span>/boot/config-<span class="sb">`</span>uname<span class="w"> </span>-r<span class="sb">`</span><span class="w"> </span>.config
+</code></pre></div>
+
+<h3>Compiling the kernel</h3>
+<div class="codehilite"><pre><span></span><code>make<span class="w"> </span>oldconfig
+</code></pre></div>
+
+<p>Another way to trim down the kernel and tailor it to your system is by using <code>localmodconfig</code> target:</p>
+<div class="codehilite"><pre><span></span><code>lsmod<span class="w"> </span>&gt;<span class="w"> </span>/tmp/my-lsmod
+make<span class="w"> </span><span class="nv">LSMOD</span><span class="o">=</span>/tmp/my-lsmod<span class="w"> </span>localmodconfig
+</code></pre></div>
+
+<p>You can use <code>make help</code> to view all the <em>make</em> options available.</p>
+<h3>Options for kernel modules development</h3>
+<p>If you will be writing, loading and unloading kernel modules on the kernel you are going to build, some options should be updated to make your life easier. First, open the <code>.config</code> file and ensure <code>CONFIG_MODVERSIONS</code> is set to <code>y</code>. This allows you to load kernel modules built on one version on another version.</p>
+<p>You should also disable module signing so you can freely experiment by loading the modules you develop:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">CONFIG_MODULE_SIG</span><span class="o">=</span>n
+<span class="nv">CONFIG_MODULE_SIG_ALL</span><span class="o">=</span>n
+<span class="c1"># CONFIG_MODULE_SIG_FORCE is not set</span>
+<span class="c1"># CONFIG_MODULE_SIG_SHA1 is not set</span>
+<span class="c1"># CONFIG_MODULE_SIG_SHA224 is not set</span>
+<span class="c1"># CONFIG_MODULE_SIG_SHA256 is not set</span>
+<span class="c1"># CONFIG_MODULE_SIG_SHA384 is not set</span>
+</code></pre></div>
+
+<p>It is also recommended to enable forced module unloading by setting <code>CONFIG_MODULE_FORCE_UNLOAD</code> to <code>y</code>. When this option is enabled, you can force the kernel to unload a module even when it believes it is unsafe, via a <code>sudo rmmod -f</code> module command.</p>
+<h3>Building the kernel</h3>
+<p>Build your kernel with:</p>
+<div class="codehilite"><pre><span></span><code>make<span class="w"> </span>-j12
+</code></pre></div>
+
+<h3>Installing the new kernel</h3>
+<p>Once the kernel build is complete, install the new kernel with:</p>
+<div class="codehilite"><pre><span></span><code>su<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;make modules_install install&quot;</span>
+</code></pre></div>
+
+<p>The above command will install the new kernel and run <em>update-grub</em> to add the new kernel to the grub menu.</p>
+<h3>Booting the kernel</h3>
+<p>In <code>/etc/default/grub</code>, set the GRUB_TIMEOUT value to 60 seconds, so grub pauses in the menu long enough to choose a kernel to boot and also enable printing early boot messages to <em>vga</em> using the <em>earlyprintk=vga</em> kernel boot option by adding <code>GRUB_CMDLINE_LINUX="earlyprintk=vga"</code> to the file.</p>
+<p>The content of my <code>/etc/default/grub</code> file is shared below:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># If you change this file, run &#39;update-grub&#39; afterwards to update</span>
+<span class="c1"># /boot/grub/grub.cfg.</span>
+<span class="c1"># For full documentation of the options in this file, see:</span>
+<span class="c1">#   info -f grub -n &#39;Simple configuration&#39;</span>
+
+<span class="nv">GRUB_DEFAULT</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">GRUB_TIMEOUT</span><span class="o">=</span><span class="m">60</span>
+<span class="nv">GRUB_TIMEOUT_STYLE</span><span class="o">=</span>menu
+<span class="nv">GRUB_DISTRIBUTOR</span><span class="o">=</span><span class="sb">`</span>lsb_release<span class="w"> </span>-i<span class="w"> </span>-s<span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>Debian<span class="sb">`</span>
+<span class="nv">GRUB_CMDLINE_LINUX</span><span class="o">=</span><span class="s2">&quot;earlyprintk=vga&quot;</span>
+
+<span class="c1"># If your computer has multiple operating systems installed, then you</span>
+<span class="c1"># probably want to run os-prober. However, if your computer is a host</span>
+<span class="c1"># for guest OSes installed via LVM or raw disk devices, running</span>
+<span class="c1"># os-prober can cause damage to those guest OSes as it mounts</span>
+<span class="c1"># filesystems to look for things.</span>
+<span class="c1">#GRUB_DISABLE_OS_PROBER=false</span>
+
+<span class="c1"># Uncomment to enable BadRAM filtering, modify to suit your needs</span>
+<span class="c1"># This works with Linux (no patch required) and with any kernel that obtains</span>
+<span class="c1"># the memory map information from GRUB (GNU Mach, kernel of FreeBSD ...)</span>
+<span class="c1">#GRUB_BADRAM=&quot;0x01234567,0xfefefefe,0x89abcdef,0xefefefef&quot;</span>
+
+<span class="c1"># Uncomment to disable graphical terminal</span>
+<span class="c1">#GRUB_TERMINAL=console</span>
+
+<span class="c1"># The resolution used on graphical terminal</span>
+<span class="c1"># note that you can use only modes which your graphic card supports via VBE</span>
+<span class="c1"># you can see them in real GRUB with the command `vbeinfo&#39;</span>
+<span class="c1">#GRUB_GFXMODE=640x480</span>
+
+<span class="c1"># Uncomment if you don&#39;t want GRUB to pass &quot;root=UUID=xxx&quot; parameter to Linux</span>
+<span class="c1">#GRUB_DISABLE_LINUX_UUID=true</span>
+
+<span class="c1"># Uncomment to disable generation of recovery mode menu entries</span>
+<span class="c1">#GRUB_DISABLE_RECOVERY=&quot;true&quot;</span>
+
+<span class="c1"># Uncomment to get a beep at grub start</span>
+<span class="c1">#GRUB_INIT_TUNE=&quot;480 440 1&quot;</span>
+</code></pre></div>
+
+<p>Run <em>update-grub</em> to update the grub configuration in <em>/boot</em>:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>update-grub
+</code></pre></div>
+
+<p>Restart the system. Once the new kernel comes up, compare the <em>dmesg</em> from the old kernel with the new one(the next section describes how), and see if there are any regressions.</p>
+<h2>Examining kernel logs</h2>
+<p>You should compare the logs obtained by running the following commands on the current(old) kernel with your new custom kernel to check for regressions. There should be no new <em>crit</em>, <em>alert</em>, and <em>emerg</em> level messages in <em>dmesg</em>. There should be no new <em>err</em> level messages too.</p>
+<div class="codehilite"><pre><span></span><code>dmesg<span class="w"> </span>-t<span class="w"> </span>-l<span class="w"> </span>emerg
+dmesg<span class="w"> </span>-t<span class="w"> </span>-l<span class="w"> </span>crit
+dmesg<span class="w"> </span>-t<span class="w"> </span>-l<span class="w"> </span>alert
+dmesg<span class="w"> </span>-t<span class="w"> </span>-l<span class="w"> </span>err
+dmesg<span class="w"> </span>-t<span class="w"> </span>-l<span class="w"> </span>warn
+dmesg<span class="w"> </span>-t<span class="w"> </span>-k
+dmesg<span class="w"> </span>-t
+</code></pre></div>
+
+<h2>Useful debug options</h2>
+<p>The following kernel configurations are useful for debugging if you are going to be hacking the kernel.</p>
+<div class="codehilite"><pre><span></span><code>CONFIG_KASAN
+CONFIG_KMSAN
+CONFIG_UBSAN
+CONFIG_LOCKDEP
+CONFIG_PROVE_LOCKING
+CONFIG_LOCKUP_DETECTOR
+</code></pre></div>
+
+<h2>Uninstalling custom compiled kernel</h2>
+<p>To remove a custom Linux kernel installed on your machine, you need to remove the following files/dirs:</p>
+<ol>
+<li>/boot/vmlinuz<em>KERNEL-VERSION</em></li>
+<li>/boot/initrd<em>KERNEL-VERSION</em></li>
+<li>/boot/System-map<em>KERNEL-VERSION</em></li>
+<li>/boot/config-<em>KERNEL-VERSION</em></li>
+<li>/lib/modules/<em>KERNEL-VERSION</em>/</li>
+</ol>
+<p>Then, update the grub configuration file with:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>update-grub
+</code></pre></div>
+
+<h2>Further reading</h2>
+<ol>
+<li>https://www.freedesktop.org/wiki/Software/PulseAudio/HowToUseGitSendEmail/</li>
+<li>https://www.opensourceforu.com/2011/01/understanding-a-kernel-oops/</li>
+<li>https://sanjeev1sharma.wordpress.com/tag/debug-kernel-panics/</li>
+<li>https://www.kernel.org/doc/html/latest/trace/events.html</li>
+<li>https://www.kernel.org/doc/html/latest/admin-guide/bug-hunting.html</li>
+<li>https://www.kernel.org/doc/html/latest/admin-guide/bug-bisect.html</li>
+<li>https://www.kernel.org/doc/html/latest/admin-guide/dynamic-debug-howto.html</li>
+<li>https://lwn.net/Articles/592724/</li>
+</ol>
+        </div>
+    </article>
+</body>
+</html>
