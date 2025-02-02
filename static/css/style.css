@@ -1,4 +1,3 @@
-/* Reset and base styles */
 :root {
     --primary-color: #333;
     --secondary-color: #666;
@@ -9,6 +8,7 @@
     --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
+/* Reset and base styles */
 * {
     margin: 0;
     padding: 0;
@@ -21,6 +21,38 @@ body {
     color: var(--primary-color);
     background-color: var(--background-color);
     padding: 2rem 1rem;
+}
+
+/* Container layout */
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Header styles */
+.site-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.site-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.site-title a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.site-nav {
+    margin-top: 1rem;
+}
+
+.site-nav a {
+    margin-right: 1rem;
 }
 
 /* Article layout */
@@ -43,19 +75,15 @@ h1 {
 /* Metadata styles */
 .metadata {
     color: var(--secondary-color);
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;  /* Reduced from 2rem */
     font-size: 0.9rem;
-}
-
-time {
-    display: block;
-    margin-bottom: 0.5rem;
 }
 
 .tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    margin-top: 0.5rem;  /* Added to create consistent spacing */
 }
 
 .tag {
@@ -65,7 +93,6 @@ time {
     font-size: 0.8rem;
     color: var(--primary-color);
     text-decoration: none;
-    display: inline-block;
 }
 
 .tag:hover {
@@ -99,6 +126,51 @@ time {
 
 .content li {
     margin-bottom: 0.5rem;
+}
+
+/* Image styles */
+.content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 2rem auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Figure styles for images with captions */
+.content figure {
+    margin: 2rem auto;
+    max-width: 100%;
+}
+
+.content figure img {
+    margin: 0 auto;
+}
+
+.content figcaption {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin-top: 0.5rem;
+}
+
+/* Large images */
+.content .large-image {
+    max-width: min(100%, 1000px);
+    margin: 2rem calc(50% - min(50%, 500px));
+}
+
+/* Medium images */
+.content .medium-image {
+    max-width: min(100%, 600px);
+    margin: 2rem auto;
+}
+
+/* Small images */
+.content .small-image {
+    max-width: min(100%, 300px);
+    margin: 2rem auto;
 }
 
 /* Code blocks */
@@ -135,59 +207,22 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Responsive adjustments */
-@media (max-width: 600px) {
-    body {
-        padding: 1rem;
-    }
-
-    h1 {
-        font-size: 2rem;
-    }
-
-    .content {
-        font-size: 1rem;
-    }
-}
-
-.container {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 2rem 1rem;
-}
-
-.site-header {
-    margin-bottom: 3rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #eee;
-}
-
-.site-title {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
-
-.site-title a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.site-nav {
-    margin-top: 1rem;
-}
-
-.site-nav a {
-    margin-right: 1rem;
-}
-
+/* Posts list */
 .posts-list {
-    margin-top: 2rem;
+    margin-top: 1rem;  /* Reduced from 2rem */
 }
 
 .post-summary {
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
+    margin-bottom: 1rem;  /* Reduced from 2rem */
+    padding-bottom: 1rem; /* Reduced from 2rem */
     border-bottom: 1px solid #eee;
+}
+
+.post-summary:last-child {
+    /* Remove border and margin from last post summary */
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .post-summary h2 {
@@ -203,10 +238,34 @@ a:hover {
     text-decoration: underline;
 }
 
+/* Footer */
 .site-footer {
     margin-top: 3rem;
     padding-top: 1rem;
     border-top: 1px solid #eee;
     color: var(--secondary-color);
     text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    body {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .content {
+        font-size: 1rem;
+    }
+
+    .content img {
+        margin: 1.5rem auto;
+    }
+
+    .container {
+        padding: 1rem;
+    }
 }
