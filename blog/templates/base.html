@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Blog{% endblock %}</title>
+    <title>{% block title %}Oye Oloyede{% endblock %}</title>
     <link rel="stylesheet" href="{{ css_path }}/style.css">
     <link rel="stylesheet" href="{{ css_path }}/pygments.css">
     {% block extra_head %}{% endblock %}
@@ -11,16 +11,13 @@
 <body>
     <div class="container">
         <header class="site-header">
-            <h1 class="site-title"><a href="{{ root_path }}">Your Blog Name</a></h1>
-            <nav class="site-nav">
-                <a href="{{ root_path }}">Home</a>
-            </nav>
+            <h1 class="site-title"><a href="{{ root_path }}">Oye Oloyede</a></h1>
         </header>
         <main>
             {% block content %}{% endblock %}
         </main>
         <footer class="site-footer">
-            <p>&copy; {{ current_year }} Your Name</p>
+            <p>&copy; {{ current_year }} Oye Oloyede</p>
         </footer>
     </div>
 </body>
