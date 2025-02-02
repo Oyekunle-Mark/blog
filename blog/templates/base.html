@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Blog{% endblock %}</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="/static/css/pygments.css">
+    <link rel="stylesheet" href="{{ css_path }}/style.css">
+    <link rel="stylesheet" href="{{ css_path }}/pygments.css">
     {% block extra_head %}{% endblock %}
 </head>
 <body>
     <div class="container">
         <header class="site-header">
-            <h1 class="site-title"><a href="/">Your Blog Name</a></h1>
+            <h1 class="site-title"><a href="{{ root_path }}">Your Blog Name</a></h1>
             <nav class="site-nav">
-                <a href="/">Home</a>
+                <a href="{{ root_path }}">Home</a>
             </nav>
         </header>
         <main>

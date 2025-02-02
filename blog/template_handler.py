@@ -26,6 +26,8 @@ class TemplateHandler:
             'date': post.date,
             'tags': post.tags,
             'content': post.content,
+            'css_path': '../css',    # Posts are in posts/ subdirectory
+            'root_path': '../',      # Go up one level to reach root
             **self.common_context
         }
         return self.post_template.render(context)
@@ -36,6 +38,8 @@ class TemplateHandler:
         sorted_posts = sorted(posts, key=lambda x: x.date, reverse=True)
         context = {
             'posts': sorted_posts,
+            'css_path': 'css',       # Index is at root
+            'root_path': './',       # Already at root
             **self.common_context
         }
         return self.index_template.render(context)
