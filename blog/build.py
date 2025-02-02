@@ -1,7 +1,7 @@
 from pathlib import Path
 import shutil
-from .post_builder import PostBuilder
-from .post_writer import PostWriter
+from .page_builder import PageBuilder
+from .page_writer import PageWriter
 from .css_generator import CssGenerator
 
 def cleanup_generated_files(static_dir: Path) -> None:
@@ -10,7 +10,6 @@ def cleanup_generated_files(static_dir: Path) -> None:
 
     # Remove generated HTML files in posts directory
     posts_dir = static_dir / "posts"
-
     if posts_dir.exists():
         # List files being removed
         files = list(posts_dir.glob('*.html'))
@@ -24,13 +23,10 @@ def cleanup_generated_files(static_dir: Path) -> None:
     else:
         print(f"No posts directory found at {posts_dir}")
 
-    # Remove index.html
-    index_file = static_dir / "index.html"
-    if index_file.exists():
-        index_file.unlink()
-        print(f"Removed file: {index_file}")
-    else:
-        print("No index.html found")
+    # Remove index.html and tag pages
+    for html_file in static_dir.glob('*.html'):
+        html_file.unlink()
+        print(f"Removed file: {html_file}")
 
     # Remove generated pygments.css
     pygments_css = static_dir / "css" / "pygments.css"
@@ -61,16 +57,16 @@ def main():
         print(f"Warning: Failed to generate CSS: {e}")
 
     try:
-        # Build posts from markdown files
-        builder = PostBuilder(str(posts_dir))
-        posts = builder.build_posts()
+        # Build pages from markdown files
+        builder = PageBuilder(str(posts_dir))
+        pages = builder.build_pages()
 
-        # Write posts and index
-        writer = PostWriter(
+        # Write all pages
+        writer = PageWriter(
             output_dir=str(static_dir / "posts"),
             templates_dir=str(templates_dir)
         )
-        successful_count = writer.write_all(posts)
+        successful_count = writer.write_all(pages)
 
         # Print final summary
         print(f"\nTotal posts generated: {successful_count}")

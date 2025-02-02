@@ -1,7 +1,7 @@
 from typing import List
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from datetime import datetime
-from .config import Post
+from .config import Post, Tag, Pages
 
 class TemplateHandler:
     def __init__(self, templates_dir: str):
@@ -13,6 +13,7 @@ class TemplateHandler:
         # Load templates
         self.post_template = self.env.get_template('post.html')
         self.index_template = self.env.get_template('index.html')
+        self.tag_template = self.env.get_template('tag.html')
 
         # Common context for all templates
         self.common_context = {
@@ -26,20 +27,29 @@ class TemplateHandler:
             'date': post.date,
             'tags': post.tags,
             'content': post.content,
-            'css_path': '../css',    # Posts are in posts/ subdirectory
-            'root_path': '../',      # Go up one level to reach root
+            'css_path': '../css',
+            'root_path': '../',
             **self.common_context
         }
         return self.post_template.render(context)
 
-    def render_index(self, posts: List[Post]) -> str:
+    def render_index(self, pages: Pages) -> str:
         """Render the index page with all posts"""
-        # Sort posts by date, newest first
-        sorted_posts = sorted(posts, key=lambda x: x.date, reverse=True)
         context = {
-            'posts': sorted_posts,
-            'css_path': 'css',       # Index is at root
-            'root_path': './',       # Already at root
+            'posts': pages.posts,
+            'tags': pages.tags,
+            'css_path': 'css',
+            'root_path': './',
             **self.common_context
         }
         return self.index_template.render(context)
+
+    def render_tag(self, tag: Tag) -> str:
+        """Render a tag page"""
+        context = {
+            'tag': tag,
+            'css_path': 'css',
+            'root_path': './',
+            **self.common_context
+        }
+        return self.tag_template.render(context)

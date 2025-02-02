@@ -3,6 +3,15 @@
 {% block title %}Blog{% endblock %}
 
 {% block content %}
+<div class="tags-list">
+    <h2>Tags</h2>
+    <div class="tags">
+        {% for tag in tags %}
+            <a href="{{ tag.html_filename }}" class="tag">{{ tag.name }} ({{ tag.posts|length }})</a>
+        {% endfor %}
+    </div>
+</div>
+
 <div class="posts-list">
     {% for post in posts %}
     <article class="post-summary">

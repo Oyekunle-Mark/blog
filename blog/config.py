@@ -33,7 +33,6 @@ class Post:
         Create a Post instance from markdown metadata and content.
         Raises KeyError if required metadata (title, tags) is missing.
         """
-
         try:
             return cls(
                 filename=filename,
@@ -49,3 +48,18 @@ class Post:
     def html_filename(self) -> str:
         """Generate HTML filename from markdown filename"""
         return Path(self.filename).with_suffix('.html').name
+
+@dataclass
+class Tag:
+    name: str
+    posts: List[Post]
+
+    @property
+    def html_filename(self) -> str:
+        """Generate HTML filename for tag page"""
+        return f"{self.name}.html"
+
+@dataclass
+class Pages:
+    posts: List[Post]
+    tags: List[Tag]
