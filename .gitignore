@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 *.so
 blog/__pycache__/
+.coverage
 
 # Distribution / packaging
 dist/
