@@ -4,9 +4,11 @@
     --background-color: #fff;
     --accent-color: #0066cc;
     --max-width: 768px;
-    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 /* Reset and base styles */
 * {
@@ -47,6 +49,13 @@ body {
     text-decoration: none;
 }
 
+/* Intro */
+.intro {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
 /* Article layout */
 article {
     max-width: var(--max-width);
@@ -67,7 +76,7 @@ h1 {
 /* Metadata styles */
 .metadata {
     color: var(--secondary-color);
-    margin-bottom: 1rem;  /* Reduced from 2rem */
+    margin-bottom: 1rem;
     font-size: 0.9rem;
 }
 
@@ -75,7 +84,7 @@ h1 {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 0.5rem;  /* Added to create consistent spacing */
+    margin-top: 0.5rem;
 }
 
 .tag {
@@ -201,17 +210,23 @@ a:hover {
 
 /* Posts list */
 .posts-list {
-    margin-top: 1rem;  /* Reduced from 2rem */
+    margin-top: 1rem;
+}
+
+.tags-list h2,
+.posts-list > h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
 }
 
 .post-summary {
-    margin-bottom: 1rem;  /* Reduced from 2rem */
-    padding-bottom: 1rem; /* Reduced from 2rem */
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid #eee;
 }
 
 .post-summary:last-child {
-    /* Remove border and margin from last post summary */
     border-bottom: none;
     margin-bottom: 0;
     padding-bottom: 0;
@@ -219,11 +234,14 @@ a:hover {
 
 .post-summary h2 {
     margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+    line-height: 1.3;
 }
 
 .post-summary h2 a {
     color: var(--primary-color);
     text-decoration: none;
+    font-weight: 500;
 }
 
 .post-summary h2 a:hover {

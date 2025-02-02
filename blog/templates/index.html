@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Blog{% endblock %}
-
 {% block content %}
+<div class="intro">
+    <p>Hey there, I'm Oye. This corner of the internet is where I document my learning adventures and share the opinions I wish to fling into the void of the universe. I hope you find something interesting.</p>
+</div>
+
 <div class="tags-list">
     <h2>Tags</h2>
     <div class="tags">
@@ -13,6 +15,7 @@
 </div>
 
 <div class="posts-list">
+    <h2>Posts</h2>
     {% for post in posts %}
     <article class="post-summary">
         <h2><a href="/posts/{{ post.html_filename }}">{{ post.title }}</a></h2>
