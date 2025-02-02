@@ -7,7 +7,7 @@ tags: ["osdev", "C"]
 draft: false
 ---
 
-My interest was piqued by operating systems recently and I have been spending more and more time learning how they work and how they are built. After working my way through most of the xv6 labs[^1], I decided to invest time reading and trying out the tutorials on [osdev wiki](https://wiki.osdev.org/Main_Page) because I wanted to find my way without the guard rails provided by the xv6 course. This article is the result of my trying out the [Bare Bones tutorial](https://wiki.osdev.org/Bare_Bones) on the wiki.
+My interest was piqued by operating systems recently and I have been spending more and more time learning how they work and how they are built. After working my way through most of the [xv6 labs](https://pdos.csail.mit.edu/6.828/2023/xv6.html), I decided to invest time reading and trying out the tutorials on [osdev wiki](https://wiki.osdev.org/Main_Page) because I wanted to find my way without the guard rails provided by the xv6 course. This article is the result of my trying out the [Bare Bones tutorial](https://wiki.osdev.org/Bare_Bones) on the wiki.
 
 ## Building your Cross-Compiler
 
@@ -24,9 +24,11 @@ For the minimal kernel we will be writing, we will end up with these files at th
 └── linker.ld
 ```
 
-**boot.s**: x86 assembly to start the kernel and set up the stack.\
-**kernel.c**: Main kernel code in C that uses VGA text mode[^2] to write to the screen.\
-**linker.ld**: Linker script for setting up the final ELF[^3] file and placing the Multiboot[^4] header in the final kernel image.
+**boot.s**: x86 assembly to start the kernel and set up the stack.
+
+**kernel.c**: Main kernel code in C that uses [VGA Text Mode](https://en.wikipedia.org/wiki/VGA_text_mode) to write to the screen.
+
+**linker.ld**: Linker script for setting up the final [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) file and placing the [Multiboot](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html) header in the final kernel image.
 
 All the code that will be shared will be heavily commented on to make them self-explanatory. Additional explanations will be provided under each code block to provide links to specifications that explain key concepts.
 
@@ -89,7 +91,7 @@ The [Multiboot Specification](https://www.gnu.org/software/grub/manual/multiboot
 #if defined(__linux__)
 	#error "This program is not being compiled with a cross-compiler"
 #endif
- 
+
 /* This tutorial will only work for the 32-bit ix86 targets. */
 #if !defined(__i386__)
 	#error "This program is meant to target ix86"
@@ -153,13 +155,13 @@ void terminal_write_char(char c)
 	if (col_index == VGA_COLS)
 	{
 		col_index = 0;
-		row_index++; 
+		row_index++;
 	}
 
 	if (row_index == VGA_ROWS)
 	{
 		row_index = 0;
-		col_index = 0; 
+		col_index = 0;
 	}
 }
 
@@ -253,7 +255,7 @@ $HOME/opt/cross/bin/i686-elf-gcc -ffreestanding -nostdlib -T linker.ld boot.o ke
 
 ### Verifying Multiboot
 
-If you have GRUB[^5] installed, you can check whether your *my_kernel.elf* has a valid Multiboot header with:
+If you have [GRUB](https://www.gnu.org/software/grub/) installed, you can check whether your *my_kernel.elf* has a valid Multiboot header with:
 
 ```bash
 grub2-file --is-x86-multiboot my_kernel.elf
@@ -267,7 +269,7 @@ echo $?
 
 ## Running the Kernel
 
-We will be using QEMU[^6] for this. The *-kernel* option to QEMU allows us to specify an ELF executable(like our *my_kernel.elf* file) that is multiboot compliant and will boot from it. So, boot your new-fangled kernel with:
+We will be using [QEMU](https://www.qemu.org/) for this. The *-kernel* option to QEMU allows us to specify an ELF executable(like our *my_kernel.elf* file) that is multiboot compliant and will boot from it. So, boot your new-fangled kernel with:
 
 ```bash
 qemu-system-i386 -kernel my_kernel.elf
@@ -278,10 +280,3 @@ You should see something like this:
 ![screenshot of the kernel printing the welcome message](https://i.imgur.com/elD5Iz5.png)
 
 Congratulations!!!
-
-[^1]: [The xv6 OS](https://pdos.csail.mit.edu/6.828/2023/xv6.html)
-[^2]: [VGA Text Mode](https://en.wikipedia.org/wiki/VGA_text_mode)
-[^3]: [Executable and Linkable Format](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format)
-[^4]: [Multiboot Specification](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html)
-[^5]: [GRUB](https://www.gnu.org/software/grub/)
-[^6]: [QEMU](https://www.qemu.org/)

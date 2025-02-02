@@ -14,13 +14,14 @@ Having spent a little time with the 3D printer and churned out a few useful(in m
 ## Choosing my first 3D printer.
 
 There is no shortage of choice when looking to buy a 3D printer. From a few hundred pounds to models selling at over a thousand pounds, you can find something for your budget if you look hard enough. There were a few tradeoffs I was willing to make when I was looking for a good first printer:
+
 1. Pay more for ease of use, but keep costs down by not spending on features I didn't even understand what they did.
 2. Get something that *just worked*.
 3. I don't mind buying a machine with a closed ecosystem if it will deliver superior print quality when compared to its more *open* counterparts.
 
 The folks of the 3D printing world are one to tweak and fiddle endlessly. While those are vanities I am guilty of myself, I didn't want to carry it over to my 3D printing exploration. At least not when starting. I understood that I would be working with the little time I could make out from other works, so would prefer to spend my time printing than taking the printer apart constantly. The tradeoff is that I would have to pay more for one of the models that guaranteed such out-of-the-box performance. 
 
-I eventually went with a [Bambu Lab P1S](https://uk.store.bambulab.com/products/p1s?variant=40954930233404). The Bambu Lab printers come with the option of an AMS[^1] which adds about 230 pounds to the purchase price. I skipped that add-on. I didn't consider it required for a beginner. From the reviews, the Bambu Lab printers are less hands-on when compared to their Prusa[^2] counterparts. Also, where Prusa embraces an open ecosystem approach, Bambu Lab takes a closed ecosystem position. With the goal I set out with when shopping for a printer, I believe the choice of Bambu Lab satisfied my requirement perfectly.
+I eventually went with a [Bambu Lab P1S](https://uk.store.bambulab.com/products/p1s?variant=40954930233404). The Bambu Lab printers come with the option of an [Automatic Material System](https://uk.store.bambulab.com/products/ams-multicolor-printing) which adds about 230 pounds to the purchase price. I skipped that add-on. I didn't consider it required for a beginner. From the reviews, the Bambu Lab printers are less hands-on when compared to their [Prusa](https://www.prusa3d.com/category/3d-printers/) counterparts. Also, where Prusa embraces an open ecosystem approach, Bambu Lab takes a closed ecosystem position. With the goal I set out with when shopping for a printer, I believe the choice of Bambu Lab satisfied my requirement perfectly.
 
 ## Learning 3D modelling
 
@@ -45,6 +46,7 @@ The green parts were all 3D printed to specification to hold each tool.
 ### Multi-device stand
 
 I hate leaving things lying around. I prefer to have everything in its place, and with two mobile phones and an iPad, I wanted a stand that could hold a flexible amount of devices. My requirements here were:
+
 1. Be able to hold multiple devices. Along different rows or even side by side in the same row.
 2. Have support to angle the phone so I could use it when answering video and voice calls.
 
@@ -56,7 +58,7 @@ This has 3 rows, each for a single device, and can even hold 2 small devices in 
 
 ### Using community-created design files
 
-The 3D printing community is big on open source. There is a staggering amount of models out there that people have shared for free. I wanted to have a cover for my webcam that I could lift and shut for some added sense of privacy, and I found [this](https://www.printables.com/model/249731-logitech-c920-webcam-privacy-cover) on Printables[^3]. I didn't even have to design this myself. Just download and print. The open-source spirit is well and truly embraced by the people of the 3D printing world.
+The 3D printing community is big on open source. There is a staggering amount of models out there that people have shared for free. I wanted to have a cover for my webcam that I could lift and shut for some added sense of privacy, and I found [this](https://www.printables.com/model/249731-logitech-c920-webcam-privacy-cover) on Printables. I didn't even have to design this myself. Just download and print. The open-source spirit is well and truly embraced by the people of the 3D printing world.
 
 ![](https://i.imgur.com/v22UgAK.jpeg)
 
@@ -67,7 +69,3 @@ For my next projects, I will be taking on some workspace improvements. I will tr
 The process has been a very fun and rewarding one for me. Like most things, what you get from it is determined by how much effort you put into it, and the initial time of learning how to make my models made it a very creative process when I got to solving my problems. I see the 3D printer as a gateway for solving my problems *my way*.
 
 If you have seen anything that interests you here, I created a [GitHub repository](https://github.com/Oyekunle-Mark/3d_models) for storing all my 3D models. You should find the parts there.
-
-[^1]: [Automatic Material System](https://uk.store.bambulab.com/products/ams-multicolor-printing)
-[^2]: [Prusa Printers](https://www.prusa3d.com/category/3d-printers/)
-[^3]: [Printables](https://www.printables.com/)

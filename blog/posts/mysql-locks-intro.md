@@ -94,7 +94,7 @@ SELECT CONNECTION_ID();
 Now we will proceed with the rest of the operations.
 
 ```sql
-INSERT INTO members(name) 
+INSERT INTO members(name)
 VALUES('Moremi Lewis');
 
 LOCK TABLE members READ;
@@ -109,7 +109,7 @@ The result of these statements is predictable. The select statement returns the 
 Let us take it a step further by attempting to perform a write into the table.
 
 ```sql
-INSERT INTO members(name) 
+INSERT INTO members(name)
 VALUES('Sango Uche');
 ```
 
@@ -142,7 +142,7 @@ A write into a table with a read lock from another session will be put in the `w
 Insert into the `members` table:
 
 ```sql
-INSERT INTO members(name) 
+INSERT INTO members(name)
 VALUES('Mallam Uba');
 ```
 The server waits while the lock is held.
@@ -190,7 +190,7 @@ LOCK TABLE members WRITE;
 The session with the write lock can perform a read and write as demonstrated below:
 
 ```sql
-INSERT INTO members(name) 
+INSERT INTO members(name)
 VALUES('Another Member');
 
 SELECT * FROM members;
@@ -200,7 +200,7 @@ SELECT * FROM members;
 Now from the second session, let us attempt to write into the table.
 
 ```sql
-INSERT INTO members(name) 
+INSERT INTO members(name)
 VALUES('second session Member');
 ```
 

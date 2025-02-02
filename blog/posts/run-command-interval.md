@@ -11,6 +11,7 @@ A not so uncommon usecase is needing to run a command repeatedly at fixed interv
 Doing this in the Linux shell is particularly trivial.
 
 I have two quick options for going about this operation:
+
 1. Use job control to run the command in the background
 2. Use tmux to view the stdout(and/or stderr) of the command by attaching to the session and detaching when you don't have a need to view the logs.
 
@@ -29,7 +30,7 @@ This runs the date command every ten seconds in the background while appending t
 
 ## tmux
 
-If you prefer to view the output of the command interactively, you can use tmux[^1].
+If you prefer to view the output of the command interactively, you can use [tmux](https://en.wikipedia.org/wiki/Tmux).
 
 This is my preferred option, as I can attach to the session whenever I want see how things are moving on and detach when done.
 If you aren't familiar with tmux, theres at least a billion useful articles online about what it is and how to use it.
@@ -39,5 +40,3 @@ The command in this case will not redirect stdout and stderr to `/dev/null`.
 ```sh
 watch -n 10 'date'
 ```
-
-[^1]: [Tmux](https://en.wikipedia.org/wiki/Tmux)

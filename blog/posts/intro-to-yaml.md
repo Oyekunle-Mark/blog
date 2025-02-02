@@ -19,6 +19,7 @@ In this tutorial, you will learn about YAML, its syntax, and its applications. A
 ## YAML Syntax
 
 The following are the basic rules of the YAML syntax:
+
 1. Spaces and indentations are used to define document structure.
 2. Tabs are not allowed.
 3. YAML files use either `.yml` or `.yaml` file extensions.
@@ -78,7 +79,7 @@ profit: NULL
 
 #### Date and Time
 
-YAML supports ISO 8601 formatted date and time. 
+YAML supports ISO 8601 formatted date and time.
 
 ```yaml
 canonical: 2001-12-15T02:59:43.1Z
@@ -97,7 +98,7 @@ Sequences allow us to declare series of items in YAML
 countries:
   - Nigeria
   - Ghana
-  - Kenya      
+  - Kenya
 ```
 
 ### Comments

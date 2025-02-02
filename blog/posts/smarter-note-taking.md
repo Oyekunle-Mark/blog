@@ -12,6 +12,7 @@ A Software Engineer is a [knowledge worker](https://en.wikipedia.org/wiki/Knowle
 At its core, **How to Take Smart Notes** is a Zettelkasten manual. Zettelkasten is a note-taking method that involves linking related notes and ideas together. This definition is a simplification, and I  recommend you read the [Zettelkasten Wikipedia](https://en.wikipedia.org/wiki/Zettelkasten) page a read. I consider the Zettelkasten method a rigorous implementation of link-based note-taking.
 
 The main steps of maintaining a Zettelkasten are:
+
 1. Taking fleeting notes. About thoughts and ideas you have. Carry a notebook around if you have to.
 2. Making literature references. You will build a reference system for your main ideas.
 3. Making permanent notes. Which might be:
@@ -25,6 +26,7 @@ The Zettelkasten is a mind map. You expand it as you learn. Having your related 
 The Zettelkasten method itself is simple. The author spent the rest of the pages on a stream of recommendations and justification of why one should learn with a pen and take notes **during** learning.
 
 Some of these recommendations are:
+
 - **You can't think without writing**: This is a quote by the creator of the Zettelkasten system, Niklas Luhmann.
 - **Never starting from scratch**: The Zettelkasten system builds a body of notes from your learning. So you always have a trove of thoughts to begin with as drafts
 - **Writing should accompany learning**: Repeated in several different ways throughout the text. Writing reinforces the ideas learned and ensures you understand and internalise them before moving on.

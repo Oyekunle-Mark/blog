@@ -10,6 +10,7 @@ tags: ["config", "terminal"]
 I had a basic system for sharing config files across the machines I work on. I have written about how I use a [simple git workflow]({{< ref "/posts/keep-configs-in-sync.md" >}}) to share the same files on different machines along with a tiny script to set up new machines easily.
 
 That system ran into a wall recently. The main pain points of the old method were:
+
 1. There were utilities I used on one machine that I did not use on the other. My minimalist mindset wants to have the config files for the utilities I use on each machine alone and nothing more.
 2. There are frequent cases where configs vary on different machines. A common example is having some aliases for internal tools I use at my 9 to 5 but do not use anywhere else or some initialization script in my `.zshrc` for utilities that do not exist on another machine.
 3. Sensitive information that cannot be added because the config files are checked into git.
@@ -21,6 +22,7 @@ With the requirements established, I will now describe the new system, its usage
 ## Building environment-aware config files
 
 Adding a utility requires adding a new folder for the utility. To onboard a utility `xyz`, you have to do the following:
+
 1. Add a `xyz` folder to the root of the repository.
 2. Add a `common` file to the new folder. The *common* file is where you add the configurations you want to be shared across every machine for this utility.
 3. Add a `.private` file to the folder. This is the file where you add the sensitive configurations, such as personal identifying data. The file is git ignored, so its content will only ever stay on this machine.
@@ -55,12 +57,14 @@ Let's imagine that we are on a machine we refer to as *game_machine*, we build t
 The `$1` argument in the call to `build_file` earlier will be *game_machine* in the above script execution.
 
 If `xyz` has been registered as described above, and `setup_dotfiles.sh` is executed as described, it follows the following logic to build the config file for the utility:
+
 1. Truncates `~/.xyzrc` if it exists, otherwise, creates a new empty one.
-2. Check if there is a `xyz/common` file. If there is, it merges it into `~/.xyzrc`. 
+2. Check if there is a `xyz/common` file. If there is, it merges it into `~/.xyzrc`.
 3. Checks for an `xyz/game_machine` file. If there is, it merges it into `~/.xyzrc`.
 4. Check if an `xyz/.private` file exists and merges it into `~/.xyzrc` if it finds one.
 
 What this means is that, for any utility I want configuration provided for, I can:
+
 1. Provide a base configuration that should be present on every machine in `common`. This is used for those utilities that are a staple no matter the device I am using. Most of the time, this is the only file to add because the files do not change across machines.
 2. This allows me to add configurations that are specific to a machine. Or if it is a utility I do not use on all my machines, I just provide a file matching the environment name I will be passing to `setup_dotfiles.sh` with a *common* file. Also allows me to vary the generated config file based on a machine, or even have a config file generated on one machine and not on another. As many environment-specific files can be added as an environment using this repository to build configs.
 3. Have sensitive information in the config file, by using `.private`, which doesn't have to make it into git and is isolated to where the file is added.

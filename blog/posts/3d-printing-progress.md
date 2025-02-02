@@ -25,6 +25,7 @@ I came up with a half-ellipsoid design for it. Next are images of the laptop hol
 My speakers were behind my monitors. I have a three-monitor setup, so I did not have desk space left for them. I wanted a speaker stand that could lift each speaker above the monitors and allow the sounds to be unobstructed by the monitors. The speaker stand itself would be on the desk.
 
 This print is the most complex thing I have designed to date. It presents several challenges:
+
 1. The speaker stands cannot be printed once and must be split into many parts.
 2. I had never designed any part that had joints.
 3. Designing such a piece - that does not qualify as simplistic - was challenging for a 3D modelling beginner. I am a 3D modelling beginer :)
@@ -34,11 +35,13 @@ I produced a functional design that used [dovetail joints](https://en.wikipedia.
 ![](https://i.imgur.com/YoQvH43.jpeg)
 
 The parts comprise of:
+
 1. A base
 2. Stems. Connected to lift the speaker to a suitable height.
 3. The top. On which the speaker itself seats.
 
 The order of assembly is:
+
 1. Join a stem to the base.
 2. Optionally, add several stems to extend the height of the stand.
 3. Add the top to the last stem.

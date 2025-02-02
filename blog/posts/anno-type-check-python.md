@@ -84,7 +84,7 @@ $ python3 -m pip install mypy
 To type check our `say_hello` function, let's say it is contained in a `say_hello.py` file:
 
 ```sh
-$ mypy say_hello.py 
+$ mypy say_hello.py
 
 say_hello.py:2: error: Incompatible return value type (got "str", expected "int")
 Found 1 error in 1 file (checked 1 source file)

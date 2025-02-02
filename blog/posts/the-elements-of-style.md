@@ -12,6 +12,7 @@ I moved on to [the Elements of Style](https://amzn.eu/d/0ct5zf7z) after reading 
 This [article](https://evaparish.com/blog/how-i-edit) describes several rules mentioned in this post. The article delivers so much value without losing conciseness. I recommend you start by reading that article as it sets the tone nicely for the rest of this post. The article also provides examples of how to put some of the common rules into practice. Examples are lacking in this post.
 
 The fourth edition of the book which I read has five sections:
+
 1. Elementary rules of usage
 2. Elementary principles of composition
 3. A few matters of form
@@ -66,6 +67,7 @@ This I have to remember.
 ## An Approach to style - A list of reminders
 
 These are reminders, in verbatim, at the end of the book:
+
 1. **Place yourself in the background.**
 2. **Write in a way that comes naturally to you.** This means to try not to imitate style. Your style will emerge if you write well.
 3. **Work from a suitable design**. This is the same *"Choose a destination before starting"* rule from *Principles of Composition* above.

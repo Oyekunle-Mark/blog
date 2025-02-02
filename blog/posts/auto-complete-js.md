@@ -7,7 +7,7 @@ draft: false
 tags: ["javascript", "data-structures"]
 ---
 
-Autocompletes, or Word completions, are ubiquitous. They help us complete our entries in so many places, that we've now taken them for granted. 
+Autocompletes, or Word completions, are ubiquitous. They help us complete our entries in so many places, that we've now taken them for granted.
 
 In this article, we will be learning enough to understand what autocomplete programs are and how they work. We will also cobble together a rudimentary autocomplete program that can efficiently suggest valid words that match our entries. We will also be learning about the trie data structure and the role it plays in building autocomplete programs.
 
@@ -52,7 +52,7 @@ function findMatches(validWords, userInput) {
 Straightforward enough. Is it not?
 We can test this by logging the result of passing the function some user input:
 
-```javascript=
+```javascript
 console.log(findMatches(validWords, "flat"));
 console.log(findMatches(validWords, "c"));
 console.log(findMatches(validWords, "esp"));

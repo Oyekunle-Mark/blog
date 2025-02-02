@@ -64,20 +64,20 @@ Let us perform some insertions into these tables:
 
 ```sql
 INSERT INTO students(first_name, last_name, gender, date_of_birth)
-VALUES 
+VALUES
 ("Wale", "Uche", "Male", "2010-10-21"),
 ("Ngozi", "Jumoke", "Female", "1990-02-01"),
 ("Sango", "Oya", "Male", "2002-05-30");
 
 INSERT INTO courses(course_name, course_code)
-VALUES 
+VALUES
 ("Introduction to Programming", "ICT101"),
 ("C Programming for Noobs", "CPN210"),
 ("Numerical Analysis", "MTH354"),
 ("Database Design for Dummies", "DDD322");
 
 INSERT INTO student_courses(student_id, course_id)
-VALUES 
+VALUES
 ("1", "2"),
 ("1", "3"),
 ("2", "1"),
