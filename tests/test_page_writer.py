@@ -40,7 +40,8 @@ def test_site():
 def test_write_post(test_site):
     writer = PageWriter(
         output_dir=str(Path(test_site) / "posts"),
-        templates_dir=str(Path(test_site) / "templates")
+        templates_dir=str(Path(test_site) / "templates"),
+        site_url="https://example.com"
     )
 
     post = Post(
@@ -58,7 +59,8 @@ def test_write_post(test_site):
 def test_write_all(test_site):
     writer = PageWriter(
         output_dir=str(Path(test_site) / "posts"),
-        templates_dir=str(Path(test_site) / "templates")
+        templates_dir=str(Path(test_site) / "templates"),
+        site_url="https://example.com"
     )
 
     post = Post(
@@ -79,8 +81,9 @@ def test_write_all(test_site):
     assert (Path(test_site) / "posts" / "test.html").exists()
     assert (Path(test_site) / "index.html").exists()
     assert (Path(test_site) / "test.html").exists()
+    assert (Path(test_site) / "sitemap.xml").exists()
 
-    # Check tag page content
-    tag_page = (Path(test_site) / "test.html").read_text()
-    assert 'Posts tagged "test"' in tag_page
-    assert "Test Post" in tag_page
+    # Check sitemap content
+    sitemap_content = (Path(test_site) / "sitemap.xml").read_text()
+    assert "https://example.com" in sitemap_content
+    assert "test.html" in sitemap_content

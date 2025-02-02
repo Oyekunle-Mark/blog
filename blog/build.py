@@ -5,7 +5,7 @@ from .page_writer import PageWriter
 from .css_generator import CssGenerator
 
 def cleanup_generated_files(static_dir: Path) -> None:
-    """Remove all generated files (HTML files, pygments.css, and index.html)"""
+    """Remove all generated files (HTML files, pygments.css, and sitemap.xml)"""
     print("\nCleaning up generated files...")
 
     # Remove generated HTML files in posts directory
@@ -27,6 +27,12 @@ def cleanup_generated_files(static_dir: Path) -> None:
     for html_file in static_dir.glob('*.html'):
         html_file.unlink()
         print(f"Removed file: {html_file}")
+
+    # Remove sitemap.xml
+    sitemap_file = static_dir / 'sitemap.xml'
+    if sitemap_file.exists():
+        sitemap_file.unlink()
+        print("Removed file: sitemap.xml")
 
     # Remove generated pygments.css
     pygments_css = static_dir / "css" / "pygments.css"
@@ -64,7 +70,8 @@ def main():
         # Write all pages
         writer = PageWriter(
             output_dir=str(static_dir / "posts"),
-            templates_dir=str(templates_dir)
+            templates_dir=str(templates_dir),
+            site_url="https://www.oyeoloyede.com"  # Your site URL here
         )
         successful_count = writer.write_all(pages)
 

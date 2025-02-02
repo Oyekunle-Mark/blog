@@ -1,13 +1,13 @@
 from pathlib import Path
 from .config import Post, Tag, Pages, WriterError
 from .template_handler import TemplateHandler
+from .sitemap_generator import SitemapGenerator
 
 class PageWriter:
-    """Writes all pages (posts, index, and tags) using templates"""
-
-    def __init__(self, output_dir: str, templates_dir: str):
+    def __init__(self, output_dir: str, templates_dir: str, site_url: str):
         self.output_dir = Path(output_dir)
         self.template_handler = TemplateHandler(templates_dir)
+        self.sitemap_generator = SitemapGenerator(site_url)
 
     def write_post(self, post: Post) -> Path:
         """Write a single post"""
@@ -56,10 +56,7 @@ class PageWriter:
             raise WriterError(f"Failed to write tag page {tag.name}: {str(e)}")
 
     def write_all(self, pages: Pages) -> int:
-        """
-        Write all pages (posts, index, and tags).
-        Returns number of successfully written posts.
-        """
+        """Write all pages and generate sitemap"""
         successful_count = 0
         failed_writes = []
 
@@ -79,6 +76,10 @@ class PageWriter:
                 # Write tag pages
                 for tag in pages.tags:
                     self.write_tag(tag)
+
+                # Generate sitemap
+                self.sitemap_generator.generate_sitemap(pages, self.output_dir.parent)
+
             except WriterError as e:
                 print(f"\nFailed to generate index or tag pages: {e}")
 

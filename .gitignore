@@ -27,5 +27,6 @@ ENV/
 
 # Project specific
 static/*.html
+static/*.xml
 static/posts/
 static/css/pygments.css
