@@ -1,5 +1,6 @@
 from pathlib import Path
 import shutil
+from .post_builder import PostBuilder
 from .post_writer import PostWriter
 from .css_generator import CssGenerator
 
@@ -59,15 +60,23 @@ def main():
     except Exception as e:
         print(f"Warning: Failed to generate CSS: {e}")
 
-    # Initialize writer and process posts
-    writer = PostWriter(
-        posts_dir=str(posts_dir),
-        output_dir=str(static_dir / "posts"),
-        templates_dir=str(templates_dir)
-    )
-    successful_count = writer.process_posts()
+    try:
+        # Build posts from markdown files
+        builder = PostBuilder(str(posts_dir))
+        posts = builder.build_posts()
 
-    # Print final summary
-    print(f"\nTotal posts generated: {successful_count}")
+        # Write posts and index
+        writer = PostWriter(
+            output_dir=str(static_dir / "posts"),
+            templates_dir=str(templates_dir)
+        )
+        successful_count = writer.write_all(posts)
 
-    return 0 if successful_count > 0 else 1
+        # Print final summary
+        print(f"\nTotal posts generated: {successful_count}")
+
+        return 0 if successful_count > 0 else 1
+
+    except Exception as e:
+        print(f"\nError during processing: {str(e)}")
+        return 1
