@@ -35,8 +35,6 @@ class Post:
         """
 
         try:
-            date_value = metadata['date']
-
             return cls(
                 filename=filename,
                 title=metadata['title'],
