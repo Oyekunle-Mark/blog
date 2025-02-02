@@ -3,12 +3,29 @@ import markdown
 from pathlib import Path
 from typing import List
 from .config import Post, ConversionError
+from markdown.treeprocessors import Treeprocessor
+from markdown.extensions import Extension
+
+class NewTabLinksTreeprocessor(Treeprocessor):
+    def run(self, root):
+        for element in root.iter('a'):
+            element.set('target', '_blank')
+            element.set('rel', 'noopener noreferrer')
+
+class NewTabLinksExtension(Extension):
+    def extendMarkdown(self, md):
+        md.treeprocessors.register(NewTabLinksTreeprocessor(md), 'newtablinks', 15)
 
 class MarkdownConverter:
     def __init__(self, posts_dir: str):
         self.posts_dir = Path(posts_dir)
         self.md = markdown.Markdown(
-            extensions=['extra', 'codehilite', 'meta']
+            extensions=[
+                'extra',
+                'codehilite',
+                'meta',
+                NewTabLinksExtension()
+            ]
         )
 
     def parse_markdown_file(self, file_path: Path) -> Post:
