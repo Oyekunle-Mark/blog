@@ -63,6 +63,14 @@ time {
     padding: 0.2rem 0.6rem;
     border-radius: 3px;
     font-size: 0.8rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.tag:hover {
+    background-color: #e0e0e0;
+    text-decoration: none;
 }
 
 /* Content styles */
