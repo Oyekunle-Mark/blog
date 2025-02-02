@@ -1,6 +1,35 @@
 from pathlib import Path
+import shutil
 from .post_writer import PostWriter
 from .css_generator import CssGenerator
+
+def cleanup_generated_files(static_dir: Path) -> None:
+    """Remove all generated HTML files and pygments.css"""
+    print("\nCleaning up generated files...")
+
+    # Remove generated HTML files
+    posts_dir = static_dir / "posts"
+
+    if posts_dir.exists():
+        # List files being removed
+        files = list(posts_dir.glob('*.html'))
+        if files:
+            print(f"Removing {len(files)} HTML files from {posts_dir}:")
+            for file in files:
+                print(f"  - {file.name}")
+        # Remove the directory
+        shutil.rmtree(posts_dir)
+        print(f"Removed directory: {posts_dir}")
+    else:
+        print(f"No posts directory found at {posts_dir}")
+
+    # Remove generated pygments.css
+    pygments_css = static_dir / "css" / "pygments.css"
+    if pygments_css.exists():
+        pygments_css.unlink()
+        print(f"Removed file: {pygments_css}")
+    else:
+        print(f"No pygments.css found at {pygments_css}")
 
 def main():
     # Get project root directory
@@ -8,9 +37,12 @@ def main():
 
     # Setup paths
     posts_dir = project_root / "blog" / "posts"
-    static_dir = project_root / "static" / "posts"
+    static_dir = project_root / "static"
     templates_dir = project_root / "blog" / "templates"
     css_dir = project_root / "static" / "css"
+
+    # Cleanup previously generated files
+    cleanup_generated_files(static_dir)
 
     # Generate CSS files
     try:
@@ -22,7 +54,7 @@ def main():
     # Initialize writer and process posts
     writer = PostWriter(
         posts_dir=str(posts_dir),
-        output_dir=str(static_dir),
+        output_dir=str(static_dir / "posts"),
         templates_dir=str(templates_dir)
     )
     successful_count = writer.process_posts()
