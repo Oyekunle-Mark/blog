@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="intro">
+    <p>Hey there, I'm Oye. This corner of the internet is where I document my learning adventures and share the opinions I wish to fling into the void of the universe. I hope you find something interesting.</p>
+</div>
+
+<div class="tags-list">
+    <h2>Tags</h2>
+    <div class="tags">
+        {% for tag in tags %}
+            <a href="{{ tag.html_filename }}" class="tag">{{ tag.name }} ({{ tag.posts|length }})</a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="posts-list">
+    <h2>Posts</h2>
+    {% for post in posts %}
+    <article class="post-summary">
+        <h2><a href="/posts/{{ post.html_filename }}">{{ post.title }}</a></h2>
+        <div class="metadata">
+            <time datetime="{{ post.date.isoformat() }}">{{ post.date.strftime('%B %d, %Y') }}</time>
+            <div class="tags">
+                {% for tag in post.tags %}
+                    <a href="{{ tag }}.html" class="tag">{{ tag }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% endblock %}

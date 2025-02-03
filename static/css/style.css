@@ -1,0 +1,364 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --primary-color: #333;
+    --secondary-color: #666;
+    --background-color: #fff;
+    --accent-color: #0066cc;
+    --max-width: 768px;
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    color: var(--primary-color);
+    background-color: var(--background-color);
+    padding: 2rem 1rem;
+}
+
+/* Container layout */
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Header styles */
+.site-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.site-title {
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+}
+
+.site-title a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* Intro */
+.intro {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Article layout */
+article {
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+article h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+article h2 {
+    font-size: 1.6rem;
+    margin: 2rem 0 1rem;
+    line-height: 1.3;
+}
+
+article h3 {
+    font-size: 1.3rem;
+    margin: 1.5rem 0 1rem;
+    line-height: 1.3;
+}
+
+article h4 {
+    font-size: 1.1rem;
+    margin: 1.5rem 0 1rem;
+    line-height: 1.3;
+}
+
+article h5, article h6 {
+    font-size: 1rem;
+    margin: 1.5rem 0 1rem;
+    line-height: 1.3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .site-title {
+        font-size: 2.2rem;
+    }
+
+    article h1 {
+        font-size: 1.8rem;
+    }
+
+    article h2 {
+        font-size: 1.4rem;
+    }
+
+    article h3 {
+        font-size: 1.2rem;
+    }
+
+    article h4, article h5, article h6 {
+        font-size: 1rem;
+    }
+}
+
+/* Header styles */
+header {
+    margin-bottom: 2rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+/* Metadata styles */
+.metadata {
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.tag {
+    background-color: #f0f0f0;
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.tag:hover {
+    background-color: #e0e0e0;
+    text-decoration: none;
+}
+
+.tag-page h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+/* Content styles */
+.content {
+    font-size: 1.1rem;
+}
+
+.content h2 {
+    font-size: 1.8rem;
+    margin: 2rem 0 1rem;
+}
+
+.content h3 {
+    font-size: 1.4rem;
+    margin: 1.5rem 0 1rem;
+}
+
+.content p {
+    margin-bottom: 1.2rem;
+}
+
+.content ul, .content ol {
+    margin-bottom: 1.2rem;
+    padding-left: 1.5rem;
+}
+
+.content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Image styles */
+.content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 2rem auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Figure styles for images with captions */
+.content figure {
+    margin: 2rem auto;
+    max-width: 100%;
+}
+
+.content figure img {
+    margin: 0 auto;
+}
+
+.content figcaption {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin-top: 0.5rem;
+}
+
+/* Large images */
+.content .large-image {
+    max-width: min(100%, 1000px);
+    margin: 2rem calc(50% - min(50%, 500px));
+}
+
+/* Medium images */
+.content .medium-image {
+    max-width: min(100%, 600px);
+    margin: 2rem auto;
+}
+
+/* Small images */
+.content .small-image {
+    max-width: min(100%, 300px);
+    margin: 2rem auto;
+}
+
+/* Code blocks */
+.content pre {
+    background-color: #f8f8f8;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.content code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    padding: 0.2em 0.4em;
+    background-color: #f8f8f8;
+    border-radius: 3px;
+}
+
+.content pre code {
+    padding: 0;
+    background-color: transparent;
+}
+
+/* Links */
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Posts list */
+.posts-list {
+    margin-top: 1rem;
+}
+
+.tags-list h2,
+.posts-list > h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.post-summary {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.post-summary:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.post-summary h2 {
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+    line-height: 1.3;
+}
+
+.post-summary h2 a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.post-summary h2 a:hover {
+    text-decoration: underline;
+}
+
+/* Footer styling */
+.site-footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    color: var(--secondary-color);
+    text-align: center;
+}
+
+.site-footer p {
+    margin-bottom: 0.5rem;
+}
+
+.feed-links {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.rss-link {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+.rss-link:hover {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+/* Add spacing between multiple feed links */
+.rss-link + .rss-link {
+    margin-left: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    body {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .content {
+        font-size: 1rem;
+    }
+
+    .content img {
+        margin: 1.5rem auto;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+}

@@ -1,1 +1,33 @@
-public/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+blog/__pycache__/
+.coverage
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+static/*.html
+static/*.xml
+static/posts/
+static/feeds/
+static/css/pygments.css
