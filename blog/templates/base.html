@@ -19,6 +19,10 @@
         </main>
         <footer class="site-footer">
             <p>&copy; {{ current_year }} Oye Oloyede</p>
+            <div class="feed-links">
+                <a href="/feed.xml" class="rss-link">RSS Feed</a>
+                {% block feed_links %}{% endblock %}
+            </div>
         </footer>
     </div>
 </body>
