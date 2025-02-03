@@ -1,7 +1,6 @@
 [build]
   command = """
-    curl -sSL https://install.python-poetry.org | python3 - &&
-    export PATH="/opt/buildhome/.local/bin:$PATH" &&
+    pip install poetry &&
     poetry install &&
     poetry run blog build
   """
