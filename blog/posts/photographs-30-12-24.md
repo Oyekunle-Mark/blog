@@ -5,7 +5,11 @@ description: "My 3D printing progress"
 tags: ["photography"]
 ---
 
-This is the very first post I'm putting up to share some of the photographs I take. Photography is a new hobby for me. It has satisfying creative outlet since I took to it. I intend to share some of my photographs I take a fancy to, as a way of self motivating myself to take breaks from behind the screen, and take long walks with my camera instead.
+This post is the first one I'm putting up to share some of my photographs.
+
+Photography is a new hobby for me. It has been a satisfying creative outlet since I began it.
+
+I intend to share some of my photographs to self-motivate myself to take breaks from behind the screen and take long walks with my camera instead.
 
 ---
 
