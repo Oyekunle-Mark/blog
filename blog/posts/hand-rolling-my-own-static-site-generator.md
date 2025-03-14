@@ -91,7 +91,16 @@ The flow of this function is as follows:
 
 ## Styling
 
+A `style.css` file is maintained in the `/static/css` folder. This file provides the styling for the entire blog.
+
+Code syntax highlighting is provided by using the _codehilite_ **markdown** extension and generating a styling sheet with **pygments**.
+
 ## Development live server
+
+Using the **watchdog** library, a development live server is provided. This also includes live reloading and building of the posts when a change is made to any markdown file. This makes for a pleasant writing experience as I can preview my content as I write.
 
 ## Conclusion
 
+My requirement of having a minimalist static site generator capable of providing my blogging needs has been satisfied with this project. It is also a fun little distraction for an evening. In less than the time it would have taken me to get acclimitized with the documentation of any of the free, popular open source static site generators, I have spun up a tiny SSG that meets my needs. This is also something that can be hacked and remolded to meet any future need. I suspect there are more SSG hand-rolling in my future :)
+
+You can find the full source of the SSG described in this post [on my GitHub](https://github.com/Oyekunle-Mark/blog).
