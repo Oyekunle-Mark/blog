@@ -6,6 +6,7 @@ from .css_generator import CssGenerator
 
 def cleanup_generated_files(static_dir: Path) -> None:
     """Remove all generated files"""
+
     print("\nCleaning up generated files...")
 
     # Remove generated HTML files in posts directory
@@ -13,10 +14,12 @@ def cleanup_generated_files(static_dir: Path) -> None:
     if posts_dir.exists():
         # List files being removed
         files = list(posts_dir.glob('*.html'))
+
         if files:
             print(f"Removing {len(files)} HTML files from {posts_dir}:")
             for file in files:
                 print(f"  - {file.name}")
+
         # Remove the directory
         shutil.rmtree(posts_dir)
         print(f"Removed directory: {posts_dir}")
@@ -30,23 +33,27 @@ def cleanup_generated_files(static_dir: Path) -> None:
 
     # Remove sitemap.xml
     sitemap_file = static_dir / 'sitemap.xml'
+
     if sitemap_file.exists():
         sitemap_file.unlink()
         print("Removed file: sitemap.xml")
 
     # Remove RSS feeds
     feeds_dir = static_dir / 'feeds'
+
     if feeds_dir.exists():
         shutil.rmtree(feeds_dir)
         print(f"Removed directory: {feeds_dir}")
 
     main_feed = static_dir / 'feed.xml'
+
     if main_feed.exists():
         main_feed.unlink()
         print(f"Removed file: {main_feed}")
 
     # Remove generated pygments.css
     pygments_css = static_dir / "css" / "pygments.css"
+
     if pygments_css.exists():
         pygments_css.unlink()
         print(f"Removed file: {pygments_css}")
@@ -54,6 +61,11 @@ def cleanup_generated_files(static_dir: Path) -> None:
         print(f"No pygments.css found at {pygments_css}")
 
 def main():
+    """The build function.
+    Uses all the right to perform markdown to HTML conversion
+    And also generates the CSS, RSS feeds and sitemap.xml files
+    """
+
     # Get project root directory
     project_root = Path(__file__).parent.parent
 
@@ -90,7 +102,6 @@ def main():
         print(f"\nTotal posts generated: {successful_count}")
 
         return 0 if successful_count > 0 else 1
-
     except Exception as e:
         print(f"\nError during processing: {str(e)}")
         return 1
