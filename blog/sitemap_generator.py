@@ -1,7 +1,7 @@
 from pathlib import Path
 from datetime import datetime
-from typing import List
-from .config import Post, Pages
+from .config import Pages
+
 
 class SitemapGenerator:
     def __init__(self, site_url: str):
@@ -9,6 +9,7 @@ class SitemapGenerator:
 
     def generate_sitemap(self, pages: Pages, output_dir: Path) -> Path:
         """Generate sitemap.xml"""
+
         urls = []
 
         # Add index page
@@ -46,6 +47,7 @@ class SitemapGenerator:
         # Write sitemap
         output_path = output_dir / 'sitemap.xml'
         output_path.write_text('\n'.join(sitemap_content))
+
         print(f"Generated sitemap: {output_path}")
 
         return output_path
