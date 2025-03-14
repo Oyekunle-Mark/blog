@@ -1,8 +1,7 @@
 from pathlib import Path
-from datetime import datetime
-from typing import List
 from feedgen.feed import FeedGenerator as FG
 from .config import Pages, Tag
+
 
 class BlogFeedGenerator:
     def __init__(self, site_url: str, title: str, description: str):
@@ -12,6 +11,7 @@ class BlogFeedGenerator:
 
     def generate_main_feed(self, pages: Pages, output_dir: Path) -> Path:
         """Generate main RSS feed for all posts"""
+
         fg = FG()
         fg.title(self.title)
         fg.description(self.description)
@@ -34,11 +34,14 @@ class BlogFeedGenerator:
         # Write the feed
         output_path = output_dir / 'feed.xml'
         fg.rss_file(str(output_path))
+
         print(f"Generated main RSS feed: {output_path}")
+
         return output_path
 
     def generate_tag_feed(self, tag: Tag, output_dir: Path) -> Path:
         """Generate RSS feed for a specific tag"""
+
         fg = FG()
         fg.title(f"{self.title} - Posts tagged '{tag.name}'")
         fg.description(f"Posts tagged with '{tag.name}' from {self.title}")
@@ -63,5 +66,7 @@ class BlogFeedGenerator:
         feeds_dir.mkdir(exist_ok=True)
         output_path = feeds_dir / f"{tag.name}.xml"
         fg.rss_file(str(output_path))
+
         print(f"Generated tag RSS feed: {output_path}")
+
         return output_path

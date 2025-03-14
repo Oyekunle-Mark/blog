@@ -29,6 +29,7 @@ class CssGenerator:
 
             # Write the CSS to file
             output_path.write_text(result.stdout)
+
             print(f"Generated Pygments CSS: {output_path}")
 
             return output_path
