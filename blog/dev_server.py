@@ -8,6 +8,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from .build import main as build_site
 
+
 class BlogServerHandler(http.server.SimpleHTTPRequestHandler):
     """Custom request handler that sets headers for development"""
 
@@ -18,6 +19,7 @@ class BlogServerHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Expires', '0')
         super().end_headers()
 
+
 class BlogBuilder(FileSystemEventHandler):
     """Handles file system events to trigger rebuilds"""
 
@@ -25,6 +27,7 @@ class BlogBuilder(FileSystemEventHandler):
         if event.src_path.endswith('.md'):
             print(f"\nDetected changes in {event.src_path}")
             build_site()
+
 
 class DevServer:
     """Development server with auto-rebuild capability"""
@@ -76,4 +79,3 @@ class DevServer:
             self.server.server_close()
 
         print("\nServer stopped")
-
