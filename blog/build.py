@@ -4,6 +4,7 @@ from .page_builder import PageBuilder
 from .page_writer import PageWriter
 from .css_generator import CssGenerator
 
+
 def cleanup_generated_files(static_dir: Path) -> None:
     """Remove all generated files"""
 
@@ -59,6 +60,7 @@ def cleanup_generated_files(static_dir: Path) -> None:
         print(f"Removed file: {pygments_css}")
     else:
         print(f"No pygments.css found at {pygments_css}")
+
 
 def main():
     """The build function.
