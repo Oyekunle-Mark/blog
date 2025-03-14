@@ -1,7 +1,7 @@
-from typing import List
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from datetime import datetime
 from .config import Post, Tag, Pages
+
 
 class TemplateHandler:
     def __init__(self, templates_dir: str):
@@ -22,6 +22,7 @@ class TemplateHandler:
 
     def render_post(self, post: Post) -> str:
         """Render a single post"""
+
         context = {
             'title': post.title,
             'date': post.date,
@@ -31,10 +32,12 @@ class TemplateHandler:
             'root_path': '../',
             **self.common_context
         }
+
         return self.post_template.render(context)
 
     def render_index(self, pages: Pages) -> str:
         """Render the index page with all posts"""
+
         context = {
             'posts': pages.posts,
             'tags': pages.tags,
@@ -42,14 +45,17 @@ class TemplateHandler:
             'root_path': './',
             **self.common_context
         }
+
         return self.index_template.render(context)
 
     def render_tag(self, tag: Tag) -> str:
         """Render a tag page"""
+
         context = {
             'tag': tag,
             'css_path': 'css',
             'root_path': './',
             **self.common_context
         }
+
         return self.tag_template.render(context)
