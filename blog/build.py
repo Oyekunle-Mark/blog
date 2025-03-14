@@ -64,8 +64,8 @@ def cleanup_generated_files(static_dir: Path) -> None:
 
 def main():
     """The build function.
-    Uses all the right to perform markdown to HTML conversion
-    And also generates the CSS, RSS feeds and sitemap.xml files
+    Uses all the right classes and utilities to perform markdown to HTML conversion.
+    Also generates the CSS, RSS feeds and sitemap.xml files.
     """
 
     # Get project root directory
