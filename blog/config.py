@@ -3,21 +3,26 @@ from datetime import datetime
 from typing import List
 from pathlib import Path
 
+
 class BlogError(Exception):
     """Base exception class for blog errors"""
     pass
+
 
 class ConversionError(BlogError):
     """Exception raised for markdown conversion errors"""
     pass
 
+
 class WriterError(BlogError):
     """Exception raised for file writing errors"""
     pass
 
+
 class CssGenerationError(BlogError):
     """Exception raised for CSS generation errors"""
     pass
+
 
 @dataclass
 class Post:
@@ -33,6 +38,7 @@ class Post:
         Create a Post instance from markdown metadata and content.
         Raises KeyError if required metadata (title, tags) is missing.
         """
+
         try:
             return cls(
                 filename=filename,
@@ -47,7 +53,9 @@ class Post:
     @property
     def html_filename(self) -> str:
         """Generate HTML filename from markdown filename"""
+
         return Path(self.filename).with_suffix('.html').name
+
 
 @dataclass
 class Tag:
@@ -58,6 +66,7 @@ class Tag:
     def html_filename(self) -> str:
         """Generate HTML filename for tag page"""
         return f"{self.name}.html"
+
 
 @dataclass
 class Pages:

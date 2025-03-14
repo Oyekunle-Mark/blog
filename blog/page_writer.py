@@ -4,6 +4,7 @@ from .template_handler import TemplateHandler
 from .feed_generator import BlogFeedGenerator
 from .sitemap_generator import SitemapGenerator
 
+
 class PageWriter:
     def __init__(self, output_dir: str, templates_dir: str, site_url: str):
         self.output_dir = Path(output_dir)
@@ -17,6 +18,7 @@ class PageWriter:
 
     def write_post(self, post: Post) -> Path:
         """Write a single post"""
+
         try:
             self.output_dir.mkdir(parents=True, exist_ok=True)
             output_path = self.output_dir / post.html_filename
@@ -35,6 +37,7 @@ class PageWriter:
 
     def write_index(self, pages: Pages) -> Path:
         """Write the index page"""
+
         try:
             self.output_dir.parent.mkdir(parents=True, exist_ok=True)
             output_path = self.output_dir.parent / "index.html"
@@ -43,6 +46,7 @@ class PageWriter:
             output_path.write_text(html_content)
 
             print("\nGenerated index page")
+
             return output_path
         except Exception as e:
             raise WriterError(f"Failed to write index.html: {str(e)}")
@@ -57,6 +61,7 @@ class PageWriter:
             output_path.write_text(html_content)
 
             print(f"\nGenerated tag page: {tag.name}")
+
             return output_path
         except Exception as e:
             raise WriterError(f"Failed to write tag page {tag.name}: {str(e)}")

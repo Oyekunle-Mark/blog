@@ -1,8 +1,8 @@
-from pathlib import Path
 from typing import List
 from collections import defaultdict
 from .config import Post, Tag, Pages
 from .converter import MarkdownConverter
+
 
 class PageBuilder:
     """Builds pages (posts and tag pages) from markdown files"""
@@ -15,6 +15,7 @@ class PageBuilder:
         Build tag objects from posts.
         Returns a list of Tag objects.
         """
+
         # Group posts by tag
         tag_posts = defaultdict(list)
         for post in posts:
