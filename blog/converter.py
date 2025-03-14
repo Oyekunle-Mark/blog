@@ -6,15 +6,18 @@ from .config import Post, ConversionError
 from markdown.treeprocessors import Treeprocessor
 from markdown.extensions import Extension
 
+
 class NewTabLinksTreeprocessor(Treeprocessor):
     def run(self, root):
         for element in root.iter('a'):
             element.set('target', '_blank')
             element.set('rel', 'noopener noreferrer')
 
+
 class NewTabLinksExtension(Extension):
     def extendMarkdown(self, md):
         md.treeprocessors.register(NewTabLinksTreeprocessor(md), 'newtablinks', 15)
+
 
 class MarkdownConverter:
     def __init__(self, posts_dir: str):
@@ -34,6 +37,7 @@ class MarkdownConverter:
         Returns a Post object.
         Raises ConversionError if parsing fails.
         """
+
         try:
             content = file_path.read_text()
         except Exception as e:
@@ -49,6 +53,7 @@ class MarkdownConverter:
 
         try:
             metadata = yaml.safe_load(front_matter)
+
             if not isinstance(metadata, dict):
                 raise ConversionError(f"Invalid YAML front matter in {file_path}")
         except yaml.YAMLError as e:
