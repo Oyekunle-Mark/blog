@@ -13,29 +13,29 @@ I intend to share some of my photographs to self-motivate myself to take breaks 
 ---
 
 ![](https://i.imgur.com/i9RbJAI.jpg)
-#### Penthouse squirrel
+#### Penthouse Squirrel
 
 ---
 
 ![](https://i.imgur.com/jmr8lGS.jpg)
-#### Brothers in flight
+#### Brothers in Flight
 
 ---
 
 ![](https://i.imgur.com/zX6AAR5.jpg)
-#### Forever abode
+#### Forever Abode
 
 ---
 
 ![](https://i.imgur.com/NbCZ1TC.jpg)
-#### Busy squirrel
+#### Busy Squirrel
 
 ---
 
 ![](https://i.imgur.com/cDkXbGM.jpg)
-#### Air show
+#### Air Show
 
 ---
 
 ![](https://i.imgur.com/Sjcw0jF.jpg)
-#### Framed ground
+#### Framedground
