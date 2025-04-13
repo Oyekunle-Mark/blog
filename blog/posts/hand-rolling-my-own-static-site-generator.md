@@ -33,41 +33,41 @@ A blog post(like this one you're reading) starts its life as a markdown file in 
 ```py
 def main():
     """The build function.
- Uses all the right classes and utilities to perform markdown to HTML conversion.
- Also generates the CSS, RSS feeds and sitemap.xml files.
- """
+    Uses all the right classes and utilities to perform markdown to HTML conversion.
+    Also generates the CSS, RSS feeds and sitemap.xml files.
+    """
 
     # Get project root directory
- project_root = Path(__file__).parent.parent
+    project_root = Path(__file__).parent.parent
 
     # Setup paths
- posts_dir = project_root / "blog" / "posts"
- static_dir = project_root / "static"
- templates_dir = project_root / "blog" / "templates"
- css_dir = project_root / "static" / "css"
+    posts_dir = project_root / "blog" / "posts"
+    static_dir = project_root / "static"
+    templates_dir = project_root / "blog" / "templates"
+    css_dir = project_root / "static" / "css"
 
     # Cleanup previously generated files
- cleanup_generated_files(static_dir)
+    cleanup_generated_files(static_dir)
 
     # Generate CSS files
     try:
- css_generator = CssGenerator(str(css_dir))
- css_generator.generate_pygments_css()
+        css_generator = CssGenerator(str(css_dir))
+        css_generator.generate_pygments_css()
     except Exception as e:
         print(f"Warning: Failed to generate CSS: {e}")
 
     try:
         # Build pages from markdown files
- builder = PageBuilder(str(posts_dir))
- pages = builder.build_pages()
+        builder = PageBuilder(str(posts_dir))
+        pages = builder.build_pages()
 
         # Write all pages
- writer = PageWriter(
+        writer = PageWriter(
             output_dir=str(static_dir / "posts"),
             templates_dir=str(templates_dir),
             site_url="https://www.oyeoloyede.com"
- )
- successful_count = writer.write_all(pages)
+        )
+        successful_count = writer.write_all(pages)
 
         # Print final summary
         print(f"\nTotal posts generated: {successful_count}")
