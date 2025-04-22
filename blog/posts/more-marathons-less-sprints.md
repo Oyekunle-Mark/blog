@@ -6,8 +6,8 @@ tags: ["opinion-pieces", "best-practices"]
 
 Slow is smooth, smooth is fast.
 
-When you are learning something new, prefer frequent smaller learning time-slots with as little days of inactivity as possible. This yields better result than isolated days of big leaps in advancement that require major efforts.
+When learning something new, choose a daily manageable learning time-slots. This yields better result than isolated days of big progress followed by days of inactivity.
 
-Learning and personal development is a marathon, not a sprint. Consistency is the ultimate strategy. When you have a great distance to cover, you are better of walking, not sprinting.
+Learning and personal development is a marathon, not a sprint. Consistency is the ultimate strategy. When you have a great distance to cover, you are better off walking, not sprinting.
 
 Consistency compounds while occasional brilliance fades.
