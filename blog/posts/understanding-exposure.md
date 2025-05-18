@@ -6,7 +6,7 @@ tags: ["book-reviews", "photography"]
 
 I have written about my fledgling photography hobby in the past. To continue learning to become a better photographer, I read a copy of Bryan Peterson's [Understanding Exposure](https://amzn.eu/d/gFaZUa3). I'm writing this post after finishing the book and going out on a few camera walks to put some of the learnings into practice.
 
-The book is frequently recommended on the photography forums I frequent(primarily Reddit!), and I see why now. I can't find a better resource anywhere that expounds the [Exposure Triangle](https://www.bhphotovideo.com/explora/photography/tips-and-solutions/understanding-exposure-part-1-the-exposure-triangle) in such a manner that will leave the reader ready to set out and make exposures in manual mode.
+The book is frequently recommended on the photography forums I frequent (primarily Reddit!), and I see why now. I can't find a better resource anywhere that expounds the [Exposure Triangle](https://www.bhphotovideo.com/explora/photography/tips-and-solutions/understanding-exposure-part-1-the-exposure-triangle) in such a manner that will leave the reader ready to set out and make exposures in manual mode.
 
 Shooting in manual isn't a measure of one's understanding of the rudiments of photography. Some photographers are elitist about this point being a yardstick of sorts. In this post, I am referring to shooting in manual as a reflection of my understanding of the exposure triangle. After all, a Chinese proverb goes: "I hear and I forget, I see and I remember, I do and I understand."
 
